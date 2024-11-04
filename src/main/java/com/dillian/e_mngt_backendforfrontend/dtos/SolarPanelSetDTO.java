@@ -9,7 +9,7 @@ import lombok.Setter;
 public class SolarPanelSetDTO {
 
     private double energyProduction;
-    private int researchIncome;
-    private int goldIncome;
-    private int environmentIncome;
+    private double researchIncome;
+    private double goldIncome;
+    private double environmentIncome;
 }

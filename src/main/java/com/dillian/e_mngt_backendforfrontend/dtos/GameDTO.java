@@ -1,5 +1,7 @@
 package com.dillian.e_mngt_backendforfrontend.dtos;
 
+import com.dillian.e_mngt_backendforfrontend.enums.TimeOfDay;
+import com.dillian.e_mngt_backendforfrontend.enums.WeatherType;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -22,11 +24,13 @@ public class GameDTO {
     private int publicBuildingSolarPanelCapacity;
     private double energyConsumption;
     private double energyProduction;
-    private int research;
+    private double research;
     private double goldIncome;
     private double researchIncome;
     private int popularityIncome;
     private int environmentalIncome;
     private List<BuildingDTO> buildings;
     private SupervisorDTO supervisor;
+    private TimeOfDay timeOfDay;
+    private WeatherType weatherType;
 }

@@ -15,7 +15,7 @@ import java.util.Random;
 @Service
 @Getter
 @Slf4j
-public class WeatherService {
+public class DayWeatherService {
 
     private List<TimeOfDay> timesOfDay;
     private List<WeatherType> weatherTypes;

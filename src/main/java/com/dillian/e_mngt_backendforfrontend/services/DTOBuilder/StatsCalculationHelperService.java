@@ -4,6 +4,7 @@ import com.dillian.e_mngt_backendforfrontend.dtos.BuildingDTO;
 import com.dillian.e_mngt_backendforfrontend.dtos.GameDTO;
 import com.dillian.e_mngt_backendforfrontend.dtos.SolarPanelSetDTO;
 import com.dillian.e_mngt_backendforfrontend.enums.TimeOfDay;
+import com.dillian.e_mngt_backendforfrontend.enums.WeatherType;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -35,21 +36,43 @@ public class StatsCalculationHelperService {
                 });
     }
 
-    public void updateFromDayWeather(
+    public void updateFromTimeOfDay(
             TimeOfDay timeOfDay,
             GameDTO gameDTO,
+            BiConsumer<GameDTO, TimeOfDay> setTimeOfDay,
             Predicate<BuildingDTO> filterPredicate,
             Function<BuildingDTO, Double> getter,
             BiFunction<Double, TimeOfDay, Double> calculation,
-            BiConsumer<BuildingDTO, Double> setter) {
+            BiConsumer<BuildingDTO, Double> setUpdatedValue) {
 
         gameDTO.getBuildings()
                 .stream()
-                .filter(filterPredicate)
+                .filter(building -> filterPredicate == null || filterPredicate.test(building))
                 .forEach(building -> {
+                    setTimeOfDay.accept(gameDTO, timeOfDay);
                     Double currentValue = getter.apply(building);
                     Double updatedValue = calculation.apply(currentValue, timeOfDay);
-                    setter.accept(building, updatedValue);
+                    setUpdatedValue.accept(building, updatedValue);
+                });
+    }
+
+    public void updateFromWeatherType(
+            WeatherType weatherType,
+            GameDTO gameDTO,
+            BiConsumer<GameDTO, WeatherType> setWeatherType,
+            Predicate<BuildingDTO> filterPredicate,
+            Function<BuildingDTO, Double> getter,
+            BiFunction<Double, WeatherType, Double> calculation,
+            BiConsumer<BuildingDTO, Double> setUpdatedValue) {
+
+        gameDTO.getBuildings()
+                .stream()
+                .filter(building -> filterPredicate == null || filterPredicate.test(building))
+                .forEach(building -> {
+                    setWeatherType.accept(gameDTO, weatherType);
+                    Double currentValue = getter.apply(building);
+                    Double updatedValue = calculation.apply(currentValue, weatherType);
+                    setUpdatedValue.accept(building, updatedValue);
                 });
     }
 }

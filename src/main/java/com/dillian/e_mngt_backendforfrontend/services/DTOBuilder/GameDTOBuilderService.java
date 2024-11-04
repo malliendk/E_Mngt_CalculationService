@@ -7,11 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
-@Getter
 @Slf4j
 public class GameDTOBuilderService {
-
-    private GameDTO gameDTO;
 
     private final DTOStatsCalculationService statsCalculationService;
 
@@ -23,18 +20,9 @@ public class GameDTOBuilderService {
     public GameDTO buildBasicDTO(GameDTO gameDTO) {
         statsCalculationService.mapSolarProduction(gameDTO.getBuildings()
                 .stream()
-                .filter(buildingDTO -> !buildingDTO.getSolarPanelSets().isEmpty())
+                .filter(buildingDTO -> buildingDTO.getSolarPanelSets() != null)
                 .toList());
-        this.gameDTO = statsCalculationService.calculateBasicStats(gameDTO);
-        return this.gameDTO;
-    }
-
-    public void addIncome(GameDTO gameDTO) {
-        gameDTO.setFunds(gameDTO.getFunds() + gameDTO.getGoldIncome());
-        gameDTO.setPopularity(gameDTO.getPopularity() + gameDTO.getPopularity());
-        gameDTO.setResearch(gameDTO.getResearch() + gameDTO.getResearch());
-        gameDTO.setEnvironmentalScore(gameDTO.getEnvironmentalScore() + gameDTO.getEnvironmentalIncome());
-        this.gameDTO = gameDTO;
-        log.info("updated gameDTO: {}", this.gameDTO);
+        gameDTO = statsCalculationService.calculateBasicStats(gameDTO);
+        return gameDTO;
     }
 }
