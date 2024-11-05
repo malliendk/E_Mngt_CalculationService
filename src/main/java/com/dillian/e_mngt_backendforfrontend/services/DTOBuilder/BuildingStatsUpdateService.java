@@ -2,47 +2,22 @@ package com.dillian.e_mngt_backendforfrontend.services.DTOBuilder;
 
 import com.dillian.e_mngt_backendforfrontend.dtos.BuildingDTO;
 import com.dillian.e_mngt_backendforfrontend.dtos.GameDTO;
-import com.dillian.e_mngt_backendforfrontend.dtos.SolarPanelSetDTO;
 import com.dillian.e_mngt_backendforfrontend.enums.TimeOfDay;
 import com.dillian.e_mngt_backendforfrontend.enums.WeatherType;
+import com.dillian.e_mngt_backendforfrontend.services.SolarPanelCalculationService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 @AllArgsConstructor
 @Slf4j
-public class DTOStatsCalculationService {
+public class BuildingStatsUpdateService {
 
     private final StatsCalculationHelperService helperService;
+    private final SolarPanelCalculationService solarPanelCalculationService;
 
-    public void mapSolarProduction(List<BuildingDTO> buildings) {
-        buildings.forEach(building -> {
-            helperService.mapSolarProduction(SolarPanelSetDTO::getEnergyProduction, BuildingDTO::getEnergyProduction,
-                    BuildingDTO::setEnergyProduction, building);
-            helperService.mapSolarProduction(SolarPanelSetDTO::getGoldIncome, BuildingDTO::getGoldIncome,
-                    BuildingDTO::setGoldIncome, building);
-            helperService.mapSolarProduction(SolarPanelSetDTO::getResearchIncome, BuildingDTO::getResearchIncome,
-                    BuildingDTO::setResearchIncome, building);
-            helperService.mapSolarProduction(SolarPanelSetDTO::getEnvironmentIncome, BuildingDTO::getEnvironmentalIncome,
-                    BuildingDTO::setEnvironmentalIncome, building);
-        });
-    }
 
-    public GameDTO calculateBasicStats(GameDTO gameDTO) {
-        List<BuildingDTO> buildings = gameDTO.getBuildings();
-        gameDTO.setTotalGridLoad(helperService.sumDoubleProperty(buildings, BuildingDTO::getGridLoad));
-        gameDTO.setGridCapacity(helperService.sumIntProperty(buildings, BuildingDTO::getGridCapacity));
-        gameDTO.setHouseholds(helperService.sumIntProperty(buildings, BuildingDTO::getHouseHolds));
-        gameDTO.setEnergyConsumption(helperService.sumDoubleProperty(buildings, BuildingDTO::getEnergyConsumption));
-        gameDTO.setEnergyProduction(helperService.sumDoubleProperty(buildings, BuildingDTO::getEnergyProduction));
-        gameDTO.setGoldIncome(helperService.sumDoubleProperty(buildings, BuildingDTO::getGoldIncome));
-        gameDTO.setResearchIncome(helperService.sumDoubleProperty(buildings, BuildingDTO::getResearchIncome));
-        gameDTO.setPopularityIncome(helperService.sumIntProperty(buildings, BuildingDTO::getPopularityIncome));
-        return gameDTO;
-    }
 
     public GameDTO addIncome(GameDTO gameDTO) {
         gameDTO.setFunds(gameDTO.getFunds() + gameDTO.getGoldIncome());
@@ -53,27 +28,17 @@ public class DTOStatsCalculationService {
         return gameDTO;
     }
 
-    public GameDTO updateGameByTimeOfDay(TimeOfDay timeOfDay, GameDTO gameDTO) {
+    public void updateEnergySourceProduction(WeatherType weatherType, GameDTO gameDTO) {
+        double generationFactor = weatherType.getGenerationFactor();
+        gameDTO.getBuildings()
+                .stream()
+                .filter(building -> building.getEnergyProduction() != 0 && building.getSolarPanelSets() == null)
+                .forEach(building -> building.setEnergyProduction(building.getEnergyProduction() * generationFactor));
+    }
+
+    public GameDTO updateProductionByTimeOfDay(TimeOfDay timeOfDay, GameDTO gameDTO) {
         gameDTO.setTimeOfDay(timeOfDay);
-        gameDTO.getBuildings()
-                .forEach(building -> {
-                    double newProduction = building.getEnergyProduction() * timeOfDay.getGenerationFactor();
-                    building.setEnergyProduction(newProduction);
-                });
-        gameDTO.getBuildings()
-                .stream()
-                .filter(building -> building.getHouseHolds() > 0)
-                .forEach(building -> {
-                    double newConsumption = building.getEnergyConsumption() * timeOfDay.getHousingConsumptionFactor();
-                    building.setEnergyConsumption(newConsumption);
-                });
-        gameDTO.getBuildings()
-                .stream()
-                .filter(building -> building.getGoldIncome() > 0)
-                .forEach(building -> {
-                    double newConsumption = building.getEnergyConsumption() * timeOfDay.getIndustrialConsumptionFactor();
-                    building.setEnergyConsumption(newConsumption);
-                });
+
         return gameDTO;
     }
 

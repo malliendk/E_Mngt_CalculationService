@@ -27,6 +27,13 @@ public class StatsCalculationHelperService {
                 .sum();
     }
 
+    public double sumBuildingProduction(List<BuildingDTO> DTOBuildings) {
+        return DTOBuildings
+                .stream()
+                .mapToDouble(BuildingDTO::getEnergyProduction)
+                .sum();
+    }
+
     public void mapSolarProduction(ToDoubleFunction<SolarPanelSetDTO> solarPanelGetter, ToDoubleFunction<BuildingDTO> buildingGetter,
                                    BiConsumer<BuildingDTO, Double> setterMethod, BuildingDTO buildingDTO) {
         buildingDTO.getSolarPanelSets()
