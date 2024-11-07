@@ -1,28 +1,29 @@
 package com.dillian.e_mngt_backendforfrontend.dtos;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
 
 @Getter
-@Setter
+@Builder(toBuilder = true)
 public class BuildingDTO {
 
-    private Long id;
-    private String name;
-    private String description;
-    private int price;
-    private String imageUri;
-    private int gridCapacity;
-    private double gridLoad;
-    private double energyProduction;
-    private int houseHolds;
-    private double energyConsumption;
-    private double goldIncome;
-    private int popularityIncome;
-    private double researchIncome;
-    private double environmentalIncome;
-    private List<SolarPanelSetDTO> solarPanelSets;
+    private final Long id;
+    private final String name;
+    private final String description;
+    private final int price;
+    private final String imageUri;
+    private final int gridCapacity;
+    private final double gridLoad;
+    private final double energyProduction;
+    private final int houseHolds;
+    private final double energyConsumption;
+    private final double goldIncome;
+    private final int popularityIncome;
+    private final double researchIncome;
+    private final double environmentalIncome;
+    private final List<SolarPanelSetDTO> solarPanelSets;
 
 }

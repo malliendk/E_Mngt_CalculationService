@@ -3,7 +3,7 @@ package com.dillian.e_mngt_backendforfrontend.enums;
 import lombok.Getter;
 
 @Getter
-public enum WeatherType {
+public enum WeatherType implements FactorProvider {
 
     SUNNY(1.5),
     MODERATE(1),
@@ -15,4 +15,21 @@ public enum WeatherType {
     WeatherType(double generationFactor) {
         this.generationFactor = generationFactor;
     }
+
+    @Override
+    public double getGenerationFactor() {
+        return generationFactor;
+    }
+
+    @Override
+    public double getHousingConsumptionFactor() {
+        return 0;
+    }
+
+    @Override
+    public double getIndustrialConsumptionFactor() {
+        return 0;
+    }
+
 }
+

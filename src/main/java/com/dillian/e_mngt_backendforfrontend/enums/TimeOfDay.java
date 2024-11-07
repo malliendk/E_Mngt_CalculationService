@@ -1,9 +1,6 @@
 package com.dillian.e_mngt_backendforfrontend.enums;
 
-import lombok.Getter;
-
-@Getter
-public enum TimeOfDay {
+public enum TimeOfDay implements FactorProvider {
 
     MORNING(0.75, 0.75, 1.50),
     AFTERNOON(1, 1, 1),
@@ -18,5 +15,20 @@ public enum TimeOfDay {
         this.generationFactor = generationFactor;
         this.housingConsumptionFactor = housingConsumptionFactor;
         this.industrialConsumptionFactor = industrialConsumptionFactor;
+    }
+
+    @Override
+    public double getGenerationFactor() {
+        return generationFactor;
+    }
+
+    @Override
+    public double getHousingConsumptionFactor() {
+        return housingConsumptionFactor;
+    }
+
+    @Override
+    public double getIndustrialConsumptionFactor() {
+        return industrialConsumptionFactor;
     }
 }

@@ -2,35 +2,35 @@ package com.dillian.e_mngt_backendforfrontend.dtos;
 
 import com.dillian.e_mngt_backendforfrontend.enums.TimeOfDay;
 import com.dillian.e_mngt_backendforfrontend.enums.WeatherType;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 
 import java.util.List;
 
 @Getter
-@Setter
 @ToString
+@Builder(toBuilder = true)
 public class GameDTO {
 
-    private Long id;
-    private double totalGridLoad;
-    private double environmentalScore;
-    private double funds;
-    private int popularity;
-    private int gridCapacity;
-    private double distributionEfficiency;
-    private int households;
-    private int publicBuildingSolarPanelCapacity;
-    private double energyConsumption;
-    private double energyProduction;
-    private double research;
-    private double goldIncome;
-    private double researchIncome;
-    private int popularityIncome;
-    private int environmentalIncome;
-    private List<BuildingDTO> buildings;
-    private SupervisorDTO supervisor;
-    private TimeOfDay timeOfDay;
-    private WeatherType weatherType;
+    private final Long id;
+    private final double totalGridLoad;
+    private final double environmentalScore;
+    private final double funds;
+    private final double popularity;
+    private final int gridCapacity;
+    private final double distributionEfficiency;
+    private final int households;
+    private final int publicBuildingSolarPanelCapacity;
+    private final double energyConsumption;
+    private final double energyProduction;
+    private final double research;
+    private final double goldIncome;
+    private final double researchIncome;
+    private final double popularityIncome;
+    private final double environmentalIncome;
+    private final List<BuildingDTO> buildings;
+    private final SupervisorDTO supervisor;
+    private final TimeOfDay timeOfDay;
+    private final WeatherType weatherType;
 }
