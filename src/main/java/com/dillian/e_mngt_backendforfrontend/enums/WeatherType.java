@@ -20,16 +20,5 @@ public enum WeatherType implements FactorProvider {
     public double getGenerationFactor() {
         return generationFactor;
     }
-
-    @Override
-    public double getHousingConsumptionFactor() {
-        return 0;
-    }
-
-    @Override
-    public double getIndustrialConsumptionFactor() {
-        return 0;
-    }
-
 }
 

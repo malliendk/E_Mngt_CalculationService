@@ -18,7 +18,7 @@ public class GameDTO {
     private final double environmentalScore;
     private final double funds;
     private final double popularity;
-    private final int gridCapacity;
+    private final double gridCapacity;
     private final double distributionEfficiency;
     private final int households;
     private final int publicBuildingSolarPanelCapacity;

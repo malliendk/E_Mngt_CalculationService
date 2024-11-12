@@ -18,13 +18,13 @@ public class GameController {
 
     @PostMapping("start")
     public void startGame(@RequestBody GameDTO gameDTO) {
-        gameService.startGame(gameDTO);
+        gameService.buildGameDTO(gameDTO);
         schedulerService.startSchedulers();
     }
 
     @GetMapping
     public GameDTO getGameDto() {
-        return gameService.getGameDto();
+        return gameService.getGameDTO();
     }
 
 //    @PutMapping("update")

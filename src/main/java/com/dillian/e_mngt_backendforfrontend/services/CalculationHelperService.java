@@ -6,24 +6,12 @@ import com.dillian.e_mngt_backendforfrontend.enums.FactorProvider;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.function.*;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.ToDoubleFunction;
 
 @Service
 public class CalculationHelperService {
-
-    public double sumDoubleProperty(List<BuildingDTO> buildings, ToDoubleFunction<BuildingDTO> propertyFunction) {
-        return buildings
-                .stream()
-                .mapToDouble(propertyFunction)
-                .sum();
-    }
-
-    public int sumIntProperty(ToIntFunction<BuildingDTO> propertyFunction, List<BuildingDTO> buildings) {
-        return buildings
-                .stream()
-                .mapToInt(propertyFunction)
-                .sum();
-    }
 
     public double sumBuildingProperty(ToDoubleFunction<BuildingDTO> productionGetter, List<BuildingDTO> DTOBuildings) {
         return DTOBuildings

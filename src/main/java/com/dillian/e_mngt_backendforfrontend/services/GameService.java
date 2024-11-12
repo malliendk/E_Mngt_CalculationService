@@ -1,6 +1,8 @@
 package com.dillian.e_mngt_backendforfrontend.services;
 
 import com.dillian.e_mngt_backendforfrontend.dtos.GameDTO;
+import com.dillian.e_mngt_backendforfrontend.enums.TimeOfDay;
+import com.dillian.e_mngt_backendforfrontend.enums.WeatherType;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -10,25 +12,41 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class GameService {
 
-    private GameDTO gameDto;
+    private GameDTO gameDTO;
 
     private final GameDtoBuilderService gameDTOBuilderService;
-    private final BuildingStatsUpdateService buildingStatsUpdateService;
     private final BuildingUpdateService buildingUpdateService;
+    private final CalculationHelperService calculationHelperService;
 
-
-    public GameService(GameDtoBuilderService gameDTOBuilderService, BuildingStatsUpdateService buildingStatsUpdateService, BuildingUpdateService buildingUpdateService) {
+    public GameService(CalculationHelperService calculationHelperService, GameDtoBuilderService gameDTOBuilderService, BuildingUpdateService buildingUpdateService) {
+        this.calculationHelperService = calculationHelperService;
         this.gameDTOBuilderService = gameDTOBuilderService;
-        this.buildingStatsUpdateService = buildingStatsUpdateService;
         this.buildingUpdateService = buildingUpdateService;
     }
 
-    public GameDTO startGame(GameDTO gameDTO) {
-        GameDTO newDTO = gameDTOBuilderService.buildDTO(gameDTO);
-        log.info("gameDTO in service before building basic DTO: {}", newDTO);
-        this.gameDto = newDTO;
-        return newDTO;
+    public void buildGameDTO(GameDTO gameDTO) {
+        gameDTO = gameDTOBuilderService.mapSolarIncome(gameDTO);
+        gameDTO = gameDTOBuilderService.updateGridLoad(gameDTO);
+        gameDTO = gameDTOBuilderService.updateEnergyProduction(gameDTO);
+        gameDTO = gameDTOBuilderService.updateEnergyConsumption(gameDTO);
+        gameDTO = gameDTOBuilderService.updateGridCapacity(gameDTO);
+        this.gameDTO = gameDTO.toBuilder().build();
     }
 
+    public void updateDtoByTimeOfDay(TimeOfDay timeOfDay, GameDTO gameDTO) {
+        gameDTO = gameDTO.toBuilder().timeOfDay(timeOfDay).build();
+        this.gameDTO = gameDTOBuilderService.updateEnergyConsumption(timeOfDay, gameDTO);
+        this.gameDTO = gameDTOBuilderService.updateEnergyProduction(timeOfDay, gameDTO);
+    }
+
+    public void updateDtoByWeatherType(WeatherType weatherType, GameDTO gameDTO) {
+        gameDTO = gameDTO.toBuilder().weatherType(weatherType).build();
+        this.gameDTO = gameDTOBuilderService.updateEnergyConsumption(weatherType, gameDTO);
+        this.gameDTO = gameDTOBuilderService.updateEnergyProduction(weatherType, gameDTO);
+    }
+
+    public void addIncomeToDTO(GameDTO gameDTO) {
+        this.gameDTO = gameDTOBuilderService.addIncome(gameDTO);
+    }
 }
 

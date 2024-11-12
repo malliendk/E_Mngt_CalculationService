@@ -70,7 +70,4 @@ public class BuildingUpdateService {
                 .gridLoad(updatedGridLoad)
                 .build();
     }
-
-    //grid capacity
-    //
 }

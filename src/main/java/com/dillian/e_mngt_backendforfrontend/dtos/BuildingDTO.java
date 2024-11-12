@@ -2,7 +2,6 @@ package com.dillian.e_mngt_backendforfrontend.dtos;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.util.List;
 
