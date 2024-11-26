@@ -3,8 +3,10 @@ package com.dillian.e_mngt_backendforfrontend.dtos;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 
 @Getter
+@ToString
 @Builder(toBuilder = true)
 public class SolarPanelSetDTO {
 

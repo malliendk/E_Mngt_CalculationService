@@ -3,22 +3,23 @@ package com.dillian.e_mngt_backendforfrontend.services;
 import com.dillian.e_mngt_backendforfrontend.dtos.BuildingDTO;
 import com.dillian.e_mngt_backendforfrontend.dtos.SolarPanelSetDTO;
 import com.dillian.e_mngt_backendforfrontend.enums.FactorProvider;
+import com.dillian.e_mngt_backendforfrontend.enums.TimeOfDay;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class BuildingUpdateService {
 
-    private final CalculationHelperService helperService;
-
     public BuildingDTO mapSolarProductionToBuilding(BuildingDTO buildingDTO) {
-        double updatedEnergyProduction = helperService.mapSolarProduction(SolarPanelSetDTO::getEnergyProduction, buildingDTO);
-        double updatedGoldIncome = helperService.mapSolarProduction(SolarPanelSetDTO::getGoldIncome, buildingDTO);
-        double updatedResearchIncome = helperService.mapSolarProduction(SolarPanelSetDTO::getResearchIncome, buildingDTO);
-        double updatedEnvironmentalIncome = helperService.mapSolarProduction(SolarPanelSetDTO::getEnvironmentIncome, buildingDTO);
+        SolarPanelSetDTO solarPanelSet = buildingDTO.getSolarPanelSet();
+        int solarPanelAmount = buildingDTO.getSolarPanelAmount();
+        double updatedEnergyProduction = solarPanelSet.getEnergyProduction() * solarPanelAmount;
+        double updatedGoldIncome = solarPanelSet.getGoldIncome() * solarPanelAmount;
+        double updatedResearchIncome = solarPanelSet.getResearchIncome() * solarPanelAmount;
+        double updatedEnvironmentalIncome = solarPanelSet.getEnvironmentIncome() * solarPanelAmount;
         return buildingDTO.toBuilder()
                 .energyProduction(updatedEnergyProduction)
                 .goldIncome(updatedGoldIncome)
@@ -27,41 +28,25 @@ public class BuildingUpdateService {
                 .build();
     }
 
-    public BuildingDTO updateSolarBuildingProduction(FactorProvider factorProvider, BuildingDTO building) {
-        List<SolarPanelSetDTO> updatedSolarPanelSets = building.getSolarPanelSets().stream()
-                .map(solarPanelSetDTO -> helperService.updateSolarPanelProduction(factorProvider, solarPanelSetDTO))
-                .toList();
-        double updatedProduction = updatedSolarPanelSets.stream()
-                .mapToDouble(SolarPanelSetDTO::getEnergyProduction)
-                .sum();
+    public BuildingDTO updateEnergyProduction(FactorProvider factorProvider, BuildingDTO building) {
+        double updatedProduction = building.getEnergyProduction() * factorProvider.getGenerationFactor();
         return building.toBuilder()
-                .solarPanelSets(updatedSolarPanelSets)
                 .energyProduction(updatedProduction)
                 .build();
     }
 
-    public BuildingDTO updateEnergySourceProduction(FactorProvider timeOrWeather, BuildingDTO buildingDTO) {
-        return helperService.updateBuildingProperty(
-                BuildingDTO::getEnergyProduction,
-                timeOrWeather.getGenerationFactor(),
-                buildingDTO,
-                BuildingDTO.BuildingDTOBuilder::energyProduction);
+    public BuildingDTO updateHousingEnergyConsumption(TimeOfDay timeOfDay, BuildingDTO buildingDTO) {
+        double updatedConsumption = buildingDTO.getEnergyConsumption() * timeOfDay.getHousingConsumptionFactor();
+        return buildingDTO.toBuilder()
+                .energyConsumption(updatedConsumption)
+                .build();
     }
 
-    public BuildingDTO updateHousingConsumption(FactorProvider timeOrWeather, BuildingDTO buildingDTO) {
-        return helperService.updateBuildingProperty(
-                BuildingDTO::getEnergyConsumption,
-                timeOrWeather.getHousingConsumptionFactor(),
-                buildingDTO,
-                BuildingDTO.BuildingDTOBuilder::energyConsumption);
-    }
-
-    public BuildingDTO updateIndustrialConsumption(FactorProvider timeOrWeather, BuildingDTO buildingDTO) {
-        return helperService.updateBuildingProperty(
-                BuildingDTO::getEnergyConsumption,
-                timeOrWeather.getIndustrialConsumptionFactor(),
-                buildingDTO,
-                BuildingDTO.BuildingDTOBuilder::energyConsumption);
+    public BuildingDTO updateIndustrialConsumption(TimeOfDay timeOfDay, BuildingDTO buildingDTO) {
+        double updatedConsumption = buildingDTO.getEnergyConsumption() * timeOfDay.getIndustrialConsumptionFactor();
+        return buildingDTO.toBuilder()
+                .energyConsumption(updatedConsumption)
+                .build();
     }
 
     public BuildingDTO updateGridLoad(BuildingDTO buildingDTO) {

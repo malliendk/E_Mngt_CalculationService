@@ -26,9 +26,9 @@ public class GameService {
 
     public void buildGameDTO(GameDTO gameDTO) {
         gameDTO = gameDTOBuilderService.mapSolarIncome(gameDTO);
-        gameDTO = gameDTOBuilderService.updateGridLoad(gameDTO);
         gameDTO = gameDTOBuilderService.updateEnergyProduction(gameDTO);
         gameDTO = gameDTOBuilderService.updateEnergyConsumption(gameDTO);
+        gameDTO = gameDTOBuilderService.updateGridLoad(gameDTO);
         gameDTO = gameDTOBuilderService.updateGridCapacity(gameDTO);
         this.gameDTO = gameDTO.toBuilder().build();
     }
@@ -41,7 +41,6 @@ public class GameService {
 
     public void updateDtoByWeatherType(WeatherType weatherType, GameDTO gameDTO) {
         gameDTO = gameDTO.toBuilder().weatherType(weatherType).build();
-        this.gameDTO = gameDTOBuilderService.updateEnergyConsumption(weatherType, gameDTO);
         this.gameDTO = gameDTOBuilderService.updateEnergyProduction(weatherType, gameDTO);
     }
 

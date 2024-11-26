@@ -4,6 +4,7 @@ import com.dillian.e_mngt_backendforfrontend.enums.TimeOfDay;
 import com.dillian.e_mngt_backendforfrontend.enums.WeatherType;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Singular;
 import lombok.ToString;
 
 import java.util.List;
@@ -29,6 +30,9 @@ public class GameDTO {
     private final double researchIncome;
     private final double popularityIncome;
     private final double environmentalIncome;
+    private final int solarPanelCapacity;
+    private final int solarPanelAmount;
+    @Singular
     private final List<BuildingDTO> buildings;
     private final SupervisorDTO supervisor;
     private final TimeOfDay timeOfDay;

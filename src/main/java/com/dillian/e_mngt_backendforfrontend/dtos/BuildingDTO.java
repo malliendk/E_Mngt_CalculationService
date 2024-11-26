@@ -2,10 +2,10 @@ package com.dillian.e_mngt_backendforfrontend.dtos;
 
 import lombok.Builder;
 import lombok.Getter;
-
-import java.util.List;
+import lombok.ToString;
 
 @Getter
+@ToString
 @Builder(toBuilder = true)
 public class BuildingDTO {
 
@@ -23,6 +23,7 @@ public class BuildingDTO {
     private final int popularityIncome;
     private final double researchIncome;
     private final double environmentalIncome;
-    private final List<SolarPanelSetDTO> solarPanelSets;
-
+    private final int solarPanelCapacity;
+    private final int solarPanelAmount;
+    private final SolarPanelSetDTO solarPanelSet;
 }
