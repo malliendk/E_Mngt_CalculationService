@@ -1,12 +1,11 @@
 package com.dillian.e_mngt_backendforfrontend.dtos;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 
 @Getter
 @ToString
 @Builder(toBuilder = true)
+@AllArgsConstructor
 public class BuildingDTO {
 
     private final Long id;
@@ -15,9 +14,9 @@ public class BuildingDTO {
     private final int price;
     private final String imageUri;
     private final int gridCapacity;
+    private final int houseHolds;
     private final double gridLoad;
     private final double energyProduction;
-    private final int houseHolds;
     private final double energyConsumption;
     private final double goldIncome;
     private final int popularityIncome;

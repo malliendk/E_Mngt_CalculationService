@@ -13,6 +13,12 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class BuildingUpdateService {
 
+    public BuildingDTO setSolarPanelToBuilding(BuildingDTO buildingDTO) {
+        return buildingDTO.toBuilder()
+                .solarPanelSet(new SolarPanelSetDTO())
+                .build();
+    }
+
     public BuildingDTO mapSolarProductionToBuilding(BuildingDTO buildingDTO) {
         SolarPanelSetDTO solarPanelSet = buildingDTO.getSolarPanelSet();
         int solarPanelAmount = buildingDTO.getSolarPanelAmount();

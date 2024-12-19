@@ -25,9 +25,12 @@ public class GameService {
     }
 
     public void buildGameDTO(GameDTO gameDTO) {
+        gameDTO = gameDTOBuilderService.setSolarPanels(gameDTO);
+        gameDTO = gameDTOBuilderService.updateSolarPanelAmount(gameDTO);
+        gameDTO = gameDTOBuilderService.updateSolarPanelCapacity(gameDTO);
         gameDTO = gameDTOBuilderService.mapSolarIncome(gameDTO);
-        gameDTO = gameDTOBuilderService.updateEnergyProduction(gameDTO);
-        gameDTO = gameDTOBuilderService.updateEnergyConsumption(gameDTO);
+        gameDTO = gameDTOBuilderService.updateEnergyProductionByDayWeather(gameDTO);
+        gameDTO = gameDTOBuilderService.updateEnergyConsumptionByDayWeather(gameDTO);
         gameDTO = gameDTOBuilderService.updateGridLoad(gameDTO);
         gameDTO = gameDTOBuilderService.updateGridCapacity(gameDTO);
         this.gameDTO = gameDTO.toBuilder().build();
@@ -35,13 +38,13 @@ public class GameService {
 
     public void updateDtoByTimeOfDay(TimeOfDay timeOfDay, GameDTO gameDTO) {
         gameDTO = gameDTO.toBuilder().timeOfDay(timeOfDay).build();
-        this.gameDTO = gameDTOBuilderService.updateEnergyConsumption(timeOfDay, gameDTO);
-        this.gameDTO = gameDTOBuilderService.updateEnergyProduction(timeOfDay, gameDTO);
+        this.gameDTO = gameDTOBuilderService.updateEnergyConsumptionByDayWeather(timeOfDay, gameDTO);
+        this.gameDTO = gameDTOBuilderService.updateEnergyProductionByDayWeather(timeOfDay, gameDTO);
     }
 
     public void updateDtoByWeatherType(WeatherType weatherType, GameDTO gameDTO) {
         gameDTO = gameDTO.toBuilder().weatherType(weatherType).build();
-        this.gameDTO = gameDTOBuilderService.updateEnergyProduction(weatherType, gameDTO);
+        this.gameDTO = gameDTOBuilderService.updateEnergyProductionByDayWeather(weatherType, gameDTO);
     }
 
     public void addIncomeToDTO(GameDTO gameDTO) {

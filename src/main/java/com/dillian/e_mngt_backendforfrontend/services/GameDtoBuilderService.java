@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.function.Function;
 
 @Service
 @AllArgsConstructor
@@ -18,6 +19,21 @@ public class GameDtoBuilderService {
     private final CalculationHelperService calculationHelperService;
     private final BuildingUpdateService buildingUpdateService;
 
+    public GameDTO setSolarPanels(GameDTO gameDTO) {
+        List<BuildingDTO> updatedBuildings = gameDTO.getBuildings()
+                .stream()
+                .map(buildingDTO -> {
+                            if (buildingDTO.getSolarPanelAmount() > 0) {
+                                return buildingUpdateService.setSolarPanelToBuilding(buildingDTO);
+                            }
+                            return buildingDTO;
+                        }
+                )
+                .toList();
+        return gameDTO.toBuilder()
+                .buildings(updatedBuildings)
+                .build();
+    }
 
     public GameDTO mapSolarIncome(GameDTO gameDTO) {
         List<BuildingDTO> updatedBuildings = gameDTO.getBuildings()
@@ -25,9 +41,9 @@ public class GameDtoBuilderService {
                 .filter(buildingDTO -> buildingDTO.getSolarPanelSet() != null)
                 .map(buildingUpdateService::mapSolarProductionToBuilding)
                 .toList();
-        double updatedGoldIncome = calculationHelperService.sumBuildingProperty(BuildingDTO::getGoldIncome, updatedBuildings);
-        double updatedResearchIncome = calculationHelperService.sumBuildingProperty(BuildingDTO::getResearchIncome, updatedBuildings);
-        double updatedEnvironmentalIncome = calculationHelperService.sumBuildingProperty(BuildingDTO::getEnvironmentalIncome, updatedBuildings);
+        double updatedGoldIncome = calculationHelperService.sumBuildingPropertyToDouble(BuildingDTO::getGoldIncome, updatedBuildings);
+        double updatedResearchIncome = calculationHelperService.sumBuildingPropertyToDouble(BuildingDTO::getResearchIncome, updatedBuildings);
+        double updatedEnvironmentalIncome = calculationHelperService.sumBuildingPropertyToDouble(BuildingDTO::getEnvironmentalIncome, updatedBuildings);
         return gameDTO.toBuilder()
                 .goldIncome(updatedGoldIncome)
                 .researchIncome(updatedResearchIncome)
@@ -36,48 +52,36 @@ public class GameDtoBuilderService {
                 .build();
     }
 
-
-    public GameDTO updateEnergyProduction(FactorProvider timeOrWeather, GameDTO gameDTO) {
-        List<BuildingDTO> updatedBuildings = gameDTO.getBuildings().stream()
-                .map(buildingDTO -> buildingUpdateService.updateEnergyProduction(timeOrWeather, buildingDTO))
-                .toList();
-        double updatedProductionTotal = calculationHelperService.sumBuildingProperty(BuildingDTO::getEnergyProduction,
-                updatedBuildings);
+    public GameDTO updateSolarPanelAmount(GameDTO gameDTO) {
+        int updatedSolarPanelAmount = gameDTO.getBuildings()
+                .stream()
+                .mapToInt(BuildingDTO::getSolarPanelAmount)
+                .sum();
         return gameDTO.toBuilder()
-                .energyProduction(updatedProductionTotal)
-                .buildings(updatedBuildings)
+                .solarPanelTotalAmount(updatedSolarPanelAmount)
                 .build();
     }
 
-    public GameDTO updateEnergyConsumption(TimeOfDay timeOfDay, GameDTO gameDTO) {
-        List<BuildingDTO> updatedBuildings = gameDTO.getBuildings().stream()
-                .map(building -> {
-                    if (building.getHouseHolds() > 0) {
-                        return buildingUpdateService.updateHousingEnergyConsumption(timeOfDay, building);
-                    } else if (building.getGoldIncome() > 0) {
-                        return buildingUpdateService.updateIndustrialConsumption(timeOfDay, building);
-                    } else {
-                        return building;
-                    }
-                })
-                .toList();
-        double updatedConsumptionTotal = calculationHelperService.sumBuildingProperty(BuildingDTO::getEnergyConsumption,
-                updatedBuildings);
+    public GameDTO updateSolarPanelCapacity(GameDTO gameDTO) {
+        double updatedSolarPanelCapacity = gameDTO.getBuildings()
+                .stream()
+                .mapToInt(BuildingDTO::getSolarPanelCapacity)
+                .sum();
         return gameDTO.toBuilder()
-                .energyConsumption(updatedConsumptionTotal)
-                .buildings(updatedBuildings)
+                .solarPanelCapacity(updatedSolarPanelCapacity)
                 .build();
     }
 
-    public GameDTO updateEnergyProduction(GameDTO gameDTO) {
-        double updatedTotalEnergyProduction = calculationHelperService.sumBuildingProperty(BuildingDTO::getEnergyProduction, gameDTO.getBuildings());
+    public GameDTO updateEnergyProductionByDayWeather(GameDTO gameDTO) {
+        double updatedTotalEnergyProduction = calculationHelperService.sumBuildingPropertyToDouble(BuildingDTO::getEnergyProduction,
+                gameDTO.getBuildings());
         return gameDTO.toBuilder()
                 .energyProduction(updatedTotalEnergyProduction)
                 .build();
     }
 
-    public GameDTO updateEnergyConsumption(GameDTO gameDTO) {
-        double updatedTotalEnergyConsumption = calculationHelperService.sumBuildingProperty(BuildingDTO::getEnergyConsumption, gameDTO.getBuildings());
+    public GameDTO updateEnergyConsumptionByDayWeather(GameDTO gameDTO) {
+        double updatedTotalEnergyConsumption = calculationHelperService.sumBuildingPropertyToDouble(BuildingDTO::getEnergyConsumption, gameDTO.getBuildings());
         return gameDTO.toBuilder()
                 .energyConsumption(updatedTotalEnergyConsumption)
                 .build();
@@ -91,18 +95,57 @@ public class GameDtoBuilderService {
                 .mapToDouble(BuildingDTO::getGridLoad)
                 .sum();
         return gameDTO.toBuilder()
-                .totalGridLoad(updatedGridLoad)
+                //.totalGridLoad(updatedGridLoad)
                 .buildings(updatedBuildings)
                 .build();
     }
 
-    public GameDTO updateGridCapacity(GameDTO gameDTO) {
-        double updatedTotalGridCapacity = calculationHelperService.sumBuildingProperty(BuildingDTO::getGridCapacity,
+    public GameDTO updateGridCapacity(final GameDTO gameDTO) {
+
+        double updatedTotalGridCapacity = calculationHelperService.sumBuildingPropertyToDouble(BuildingDTO::getGridCapacity,
                 gameDTO.getBuildings());
         return gameDTO.toBuilder()
                 .gridCapacity(updatedTotalGridCapacity)
                 .build();
     }
+
+    public GameDTO updateEnergyProductionByDayWeather(FactorProvider timeOrWeather, GameDTO gameDTO) {
+        List<BuildingDTO> updatedBuildings = gameDTO.getBuildings().stream()
+                .map(buildingDTO -> buildingUpdateService.updateEnergyProduction(timeOrWeather, buildingDTO))
+                .toList();
+        double updatedProductionTotal = updatedBuildings.stream()
+                .mapToDouble(BuildingDTO::getEnergyProduction)
+                .sum();
+        return gameDTO.toBuilder()
+                .energyProduction(updatedProductionTotal)
+                .buildings(updatedBuildings)
+                .build();
+    }
+
+    public GameDTO updateEnergyConsumptionByDayWeather(TimeOfDay timeOfDay, GameDTO gameDTO) {
+        List<BuildingDTO> updatedBuildings = gameDTO.getBuildings().stream()
+                .map(mapToCorrectConsuption(timeOfDay))
+                .toList();
+        double updatedConsumptionTotal = calculationHelperService.sumBuildingPropertyToDouble(BuildingDTO::getEnergyConsumption,
+                updatedBuildings);
+        return gameDTO.toBuilder()
+                .energyConsumption(updatedConsumptionTotal)
+                .buildings(updatedBuildings)
+                .build();
+    }
+
+    private Function<BuildingDTO, BuildingDTO> mapToCorrectConsuption(final TimeOfDay timeOfDay) {
+        return building -> {
+            if (building.getHouseHolds() > 0) {
+                return buildingUpdateService.updateHousingEnergyConsumption(timeOfDay, building);
+            } else if (building.getGoldIncome() > 0) {
+                return buildingUpdateService.updateIndustrialConsumption(timeOfDay, building);
+            } else {
+                return building;
+            }
+        };
+    }
+
 
     public GameDTO addIncome(GameDTO gameDTO) {
         GameDTO updatedGameDTO = gameDTO.toBuilder()

@@ -29,7 +29,7 @@ public class ScheduledUpdateService {
             GameDTO gameDTO = gameService.getGameDTO();
             gameService.updateDtoByTimeOfDay(newTimeOfDay, gameDTO);
         };
-        scheduler.scheduleAtFixedRate(task, 0, 120, TimeUnit.SECONDS);
+        scheduler.scheduleAtFixedRate(task, 0, 60, TimeUnit.SECONDS);
     }
 
     public void scheduleWeatherTypeUpdate() {
@@ -39,7 +39,7 @@ public class ScheduledUpdateService {
             GameDTO gameDTO = gameService.getGameDTO();
             gameService.updateDtoByWeatherType(newWeatherType, gameDTO);
         };
-        scheduler.scheduleAtFixedRate(task, 0, 60, TimeUnit.SECONDS);
+        scheduler.scheduleAtFixedRate(task, 0, 30, TimeUnit.SECONDS);
     }
 
     public void scheduleIncomeUpdate() {
@@ -48,6 +48,6 @@ public class ScheduledUpdateService {
             gameService.addIncomeToDTO(gameDTO);
             log.info("Next income is sent: {}", gameDTO);
         };
-        scheduler.scheduleAtFixedRate(task, 0, 120, TimeUnit.SECONDS);
+        scheduler.scheduleAtFixedRate(task, 0, 30, TimeUnit.SECONDS);
     }
 }
