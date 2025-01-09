@@ -3,7 +3,9 @@ package com.dillian.e_mngt_backendforfrontend.dtos;
 import com.dillian.e_mngt_backendforfrontend.enums.TimeOfDay;
 import com.dillian.e_mngt_backendforfrontend.enums.WeatherType;
 import com.dillian.e_mngt_backendforfrontend.services.CalculationHelperService;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.util.HashMap;
 import java.util.List;
@@ -11,41 +13,35 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Getter
+@Setter
 @ToString
 public class GameDTO {
 
-    private static final Map<String, Function<BuildingDTO, Double>> fieldGetters = Map.of(
-            "totalGridLoad", BuildingDTO::getGridLoad,
-            "gridCapacity", BuildingDTO::getGridCapacity,
-            "energyConsumption", BuildingDTO::getEnergyConsumption,
-            "energyProduction", BuildingDTO::getEnergyProduction,
-            "solarPanelAmount", BuildingDTO::getSolarPanelAmount,
-            "solarPanelCapacity", BuildingDTO::getSolarPanelCapacity,
-            "goldIncome", BuildingDTO::getGoldIncome,
-            "researchIncome", BuildingDTO::getResearchIncome,
-            "popularityIncome", BuildingDTO::getPopularityIncome,
-            "environmentalIncome", BuildingDTO::getEnvironmentalIncome
-    );
+    private static final Map<String, Function<BuildingDTO, Double>> fieldGetters = new HashMap<>() {{
+        put("totalGridLoad", BuildingDTO::getGridLoad);
+        put("gridCapacity", BuildingDTO::getGridCapacity);
+        put("energyConsumption", BuildingDTO::getEnergyConsumption);
+        put("energyProduction", BuildingDTO::getEnergyProduction);
+        put("solarPanelAmount", BuildingDTO::getSolarPanelAmount);
+        put("solarPanelCapacity", BuildingDTO::getSolarPanelCapacity);
+        put("households", BuildingDTO::getHouseHolds);
+        put("goldIncome", BuildingDTO::getGoldIncome);
+        put("researchIncome", BuildingDTO::getResearchIncome);
+        put("popularityIncome", BuildingDTO::getPopularityIncome);
+        put("environmentalIncome", BuildingDTO::getEnvironmentalIncome);
+    }};
 
     private final Map<String, Double> values;
     private final Long id;
-    @Setter
     private double environmentalScore;
-    @Setter
     private double funds;
-    @Setter
     private double popularity;
-    @Setter
     private double research;
-    @Setter
     private double energyProduction;
-    @Setter
     private double energyConsumption;
     private final List<BuildingDTO> buildings;
     private final SupervisorDTO supervisor;
-    @Setter
     private TimeOfDay timeOfDay;
-    @Setter
     private WeatherType weatherType;
 
     public GameDTO(final Map<String, Double> values, final Long id, final List<BuildingDTO> buildings, final SupervisorDTO supervisor) {
@@ -54,6 +50,25 @@ public class GameDTO {
         this.buildings = buildings;
         this.supervisor = supervisor;
     }
+
+    public double getTotalGridLoad() {
+        return CalculationHelperService.sumBuildingPropertyToDouble(BuildingDTO::getGridLoad, buildings);    }
+
+    public double getGridCapacity() {
+        return CalculationHelperService.sumBuildingPropertyToDouble(BuildingDTO::getGridCapacity, buildings);    }
+
+    public double getEnergyConsumption() {
+        return CalculationHelperService.sumBuildingPropertyToDouble(BuildingDTO::getEnergyConsumption, buildings);
+    }
+
+    public double getEnergyProduction() {
+        return CalculationHelperService.sumBuildingPropertyToDouble(BuildingDTO::getEnergyProduction, buildings);    }
+
+    public double getSolarPanelAmount() {
+        return CalculationHelperService.sumBuildingPropertyToDouble(BuildingDTO::getSolarPanelAmount, buildings);    }
+
+    public double getSolarPanelCapacity() {
+        return CalculationHelperService.sumBuildingPropertyToDouble(BuildingDTO::getSolarPanelCapacity, buildings);    }
 
     public double getGoldIncome() {
         return CalculationHelperService.sumBuildingPropertyToDouble(BuildingDTO::getGoldIncome, buildings);
@@ -70,6 +85,10 @@ public class GameDTO {
     public double getEnvironmentalIncome() {
         return CalculationHelperService.sumBuildingPropertyToDouble(BuildingDTO::getEnvironmentalIncome, buildings);
     }
+
+    public double getHouseHolds() {
+        return CalculationHelperService.sumBuildingPropertyToDouble(BuildingDTO::getHouseHolds, buildings);    }
+
 
 
     public static class GameDTOBuilder {

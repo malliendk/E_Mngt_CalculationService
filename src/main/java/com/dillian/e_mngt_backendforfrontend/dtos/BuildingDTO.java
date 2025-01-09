@@ -1,10 +1,13 @@
 package com.dillian.e_mngt_backendforfrontend.dtos;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @ToString
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class BuildingDTO {
 
     private final Long id;
@@ -19,7 +22,7 @@ public class BuildingDTO {
     private final double solarPanelAmount;
     private final SolarPanelSetDTO solarPanelSet;
     private final double solarPanelCapacity;
-    private double popularityIncome;
+    private final double popularityIncome;
     @Setter
     private double energyProduction;
     @Setter
