@@ -4,7 +4,6 @@ import lombok.*;
 
 @Getter
 @ToString
-@Builder(toBuilder = true)
 @AllArgsConstructor
 public class BuildingDTO {
 
@@ -29,6 +28,4 @@ public class BuildingDTO {
     private double researchIncome;
     @Setter
     private double environmentalIncome;
-
-
 }
