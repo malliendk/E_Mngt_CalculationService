@@ -1,11 +1,14 @@
 package com.dillian.e_mngt_backendforfrontend.services;
 
+import com.dillian.e_mngt_backendforfrontend.dtos.BuildingDTO;
 import com.dillian.e_mngt_backendforfrontend.dtos.GameDTO;
 import com.dillian.e_mngt_backendforfrontend.enums.TimeOfDay;
 import com.dillian.e_mngt_backendforfrontend.enums.WeatherType;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @Getter
@@ -14,38 +17,58 @@ public class GameService {
 
     private GameDTO gameDTO;
 
-    private final GameDtoBuilderService gameDTOBuilderService;
-    private final BuildingUpdateService buildingUpdateService;
+    private final DayWeatherService dayWeatherService;
+    private final GameDTOBuilderService gameDTOBuilderService;
     private final CalculationHelperService calculationHelperService;
 
-    public GameService(CalculationHelperService calculationHelperService, GameDtoBuilderService gameDTOBuilderService, BuildingUpdateService buildingUpdateService) {
+    public GameService(CalculationHelperService calculationHelperService, GameDTOBuilderService gameDTOBuilderService, final DayWeatherService dayWeatherService) {
         this.calculationHelperService = calculationHelperService;
         this.gameDTOBuilderService = gameDTOBuilderService;
-        this.buildingUpdateService = buildingUpdateService;
+        this.dayWeatherService = dayWeatherService;
     }
 
     public void buildGameDTO(GameDTO gameDTO) {
-        gameDTO = gameDTOBuilderService.mapSolarIncome(gameDTO);
-        gameDTO = gameDTOBuilderService.updateEnergyProduction(gameDTO);
-        gameDTO = gameDTOBuilderService.updateEnergyConsumption(gameDTO);
-        gameDTO = gameDTOBuilderService.updateGridLoad(gameDTO);
-        gameDTO = gameDTOBuilderService.updateGridCapacity(gameDTO);
-        this.gameDTO = gameDTO.toBuilder().build();
+        //accumulated income from solar panels is mapped onto their holding buildings
+        //then gameDTO value are updated by the summed values of all buildings' properties
+        gameDTOBuilderService.mapSolarProduction(gameDTO.getBuildings());
+        this.gameDTO = gameDTOBuilderService.calculateBasicStats(gameDTO);
     }
 
-    public void updateDtoByTimeOfDay(TimeOfDay timeOfDay, GameDTO gameDTO) {
-        gameDTO = gameDTO.toBuilder().timeOfDay(timeOfDay).build();
-        this.gameDTO = gameDTOBuilderService.updateEnergyConsumption(timeOfDay, gameDTO);
-        this.gameDTO = gameDTOBuilderService.updateEnergyProduction(timeOfDay, gameDTO);
+    public void updateDtoByTimeOfDay(TimeOfDay timeOfDay) {
+        //update of gameDTO is done by directly summing the buildingDTOs' production and consumption within its stream
+        //the production and consumption values of the buildingDTOs are not persisted
+        final List<BuildingDTO> housingBuildings = this.gameDTO.getBuildings().stream()
+                .filter(building -> building.getHouseHolds() > 0)
+                .toList();
+        final List<BuildingDTO> industrialBuildings = this.gameDTO.getBuildings().stream()
+                .filter(building -> building.getGoldIncome() > 0)
+                .toList();
+        double newEnergyProduction = CalculationHelperService.updateByDayOrWeather(
+                housingBuildings, BuildingDTO::getEnergyProduction, timeOfDay.getGenerationFactor());
+        double newHousingConsumption = CalculationHelperService.updateByDayOrWeather(
+                industrialBuildings, BuildingDTO::getEnergyConsumption, timeOfDay.getHousingConsumptionFactor());
+        double newIndustrialConsumption = CalculationHelperService.updateByDayOrWeather(
+                industrialBuildings, BuildingDTO::getEnergyConsumption, timeOfDay.getIndustrialConsumptionFactor());
+        this.gameDTO.setEnergyProduction(newEnergyProduction);
+        this.gameDTO.setEnergyConsumption(newHousingConsumption + newIndustrialConsumption);
+        this.gameDTO.setTimeOfDay(timeOfDay);
     }
 
-    public void updateDtoByWeatherType(WeatherType weatherType, GameDTO gameDTO) {
-        gameDTO = gameDTO.toBuilder().weatherType(weatherType).build();
-        this.gameDTO = gameDTOBuilderService.updateEnergyProduction(weatherType, gameDTO);
+    public void updateDtoByWeatherType(WeatherType weatherType) {
+        //update of gameDTO is done by directly summing the buildingDTOs' production and consumption within its stream
+        //the production values of the buildingDTOs are not persisted
+        double newEnergyProduction = CalculationHelperService.updateByDayOrWeather(
+                this.gameDTO.getBuildings(), BuildingDTO::getEnergyProduction, weatherType.getGenerationFactor());
+        this.gameDTO.setEnergyProduction(newEnergyProduction);
+        this.gameDTO.setWeatherType(weatherType);
     }
 
-    public void addIncomeToDTO(GameDTO gameDTO) {
-        this.gameDTO = gameDTOBuilderService.addIncome(gameDTO);
+    public void addIncome(GameDTO gameDTO) {
+        gameDTO.setFunds(gameDTO.getFunds() + gameDTO.getGoldIncome());
+        gameDTO.setPopularity(gameDTO.getPopularity() + gameDTO.getPopularityIncome());
+        gameDTO.setResearch(gameDTO.getResearch() + gameDTO.getResearchIncome());
+        gameDTO.setEnvironmentalScore(gameDTO.getEnvironmentalScore() + gameDTO.getEnvironmentalIncome());
+        log.info("updated gameDTO: {}", gameDTO);
     }
 }
 

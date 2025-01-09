@@ -1,12 +1,11 @@
-package com.dillian.e_mngt_backendforfrontend.services;
+package com.dillian.e_mngt_backendforfrontend.services.schedulers;
 
-import com.dillian.e_mngt_backendforfrontend.services.schedulers.ScheduledUpdateService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
-public class SchedulerService {
+public class SchedulerStartService {
 
     private final ScheduledUpdateService schedulerService;
 
@@ -14,9 +13,5 @@ public class SchedulerService {
         schedulerService.scheduleTimeOfDayUpdate();
         schedulerService.scheduleWeatherTypeUpdate();
         schedulerService.scheduleIncomeUpdate();
-    }
-
-    public void stopSchedulers() {
-//        schedulerService
     }
 }

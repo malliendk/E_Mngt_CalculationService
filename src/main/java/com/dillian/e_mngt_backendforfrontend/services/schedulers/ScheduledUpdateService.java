@@ -26,10 +26,9 @@ public class ScheduledUpdateService {
         Runnable task = () -> {
             TimeOfDay newTimeOfDay = dayWeatherService.cycleThroughTimesOfDay();
             log.info("New type of day is sent: {}", newTimeOfDay);
-            GameDTO gameDTO = gameService.getGameDTO();
-            gameService.updateDtoByTimeOfDay(newTimeOfDay, gameDTO);
+            gameService.updateDtoByTimeOfDay(newTimeOfDay);
         };
-        scheduler.scheduleAtFixedRate(task, 0, 120, TimeUnit.SECONDS);
+        scheduler.scheduleAtFixedRate(task, 0, 60, TimeUnit.SECONDS);
     }
 
     public void scheduleWeatherTypeUpdate() {
@@ -37,17 +36,17 @@ public class ScheduledUpdateService {
             WeatherType newWeatherType = dayWeatherService.getRandomWeatherType();
             log.info("Next weather type is sent: {}", newWeatherType);
             GameDTO gameDTO = gameService.getGameDTO();
-            gameService.updateDtoByWeatherType(newWeatherType, gameDTO);
+            gameService.updateDtoByWeatherType(newWeatherType);
         };
-        scheduler.scheduleAtFixedRate(task, 0, 60, TimeUnit.SECONDS);
+        scheduler.scheduleAtFixedRate(task, 0, 30, TimeUnit.SECONDS);
     }
 
     public void scheduleIncomeUpdate() {
         Runnable task = () -> {
             GameDTO gameDTO = gameService.getGameDTO();
-            gameService.addIncomeToDTO(gameDTO);
+            gameService.addIncome(gameDTO);
             log.info("Next income is sent: {}", gameDTO);
         };
-        scheduler.scheduleAtFixedRate(task, 0, 120, TimeUnit.SECONDS);
+        scheduler.scheduleAtFixedRate(task, 0, 240, TimeUnit.SECONDS);
     }
 }
