@@ -5,7 +5,7 @@ public enum TimeOfDay implements FactorProvider {
     MORNING(0.75, 0.75, 1.50),
     AFTERNOON(1, 1, 1),
     EVENING(1.50, 1.50, 0.50),
-    NIGHT(0, 0.25, 0.25),;
+    NIGHT(0, 0.25, 0.25);
 
     private final double generationFactor;
     private final double housingConsumptionFactor;

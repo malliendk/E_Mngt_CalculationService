@@ -39,10 +39,10 @@ public class GameDTO {
     private double research;
     private double energyProduction;
     private double energyConsumption;
-    private final List<BuildingDTO> buildings;
-    private final SupervisorDTO supervisor;
     private TimeOfDay timeOfDay;
     private WeatherType weatherType;
+    private final List<BuildingDTO> buildings;
+    private final SupervisorDTO supervisor;
 
     public GameDTO(final Map<String, Double> values, final Long id, final List<BuildingDTO> buildings, final SupervisorDTO supervisor) {
         this.values = values;

@@ -16,15 +16,10 @@ public class GameController {
     private final GameService gameService;
     private final SchedulerStartService schedulerService;
 
-    @PostMapping("start")
+    @PostMapping()
     public void startGame(@RequestBody GameDTO gameDTO) {
         gameService.buildGameDTO(gameDTO);
         schedulerService.startSchedulers();
-    }
-
-    @PostMapping("stop")
-    public void pauseSchedulers() {
-
     }
 
     @GetMapping
@@ -32,8 +27,8 @@ public class GameController {
         return gameService.getGameDTO();
     }
 
-//    @PutMapping("update")
-//    public GameDTO updateGame(@RequestBody GameDTO gameDTO) {
-//        return gameService.updateDTO(gameDTO);
-//    }
+    @PutMapping("update")
+    public GameDTO updateGame(@RequestBody GameDTO gameDTO) {
+        return gameService.buildGameDTO(gameDTO);
+    }
 }

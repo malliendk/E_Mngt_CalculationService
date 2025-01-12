@@ -1,8 +1,6 @@
 package com.dillian.e_mngt_backendforfrontend.services.schedulers;
 
 import com.dillian.e_mngt_backendforfrontend.dtos.GameDTO;
-import com.dillian.e_mngt_backendforfrontend.enums.TimeOfDay;
-import com.dillian.e_mngt_backendforfrontend.enums.WeatherType;
 import com.dillian.e_mngt_backendforfrontend.services.DayWeatherService;
 import com.dillian.e_mngt_backendforfrontend.services.GameService;
 import lombok.AllArgsConstructor;
@@ -23,21 +21,14 @@ public class ScheduledUpdateService {
     private final GameService gameService;
 
     public void scheduleTimeOfDayUpdate() {
-        Runnable task = () -> {
-            TimeOfDay newTimeOfDay = dayWeatherService.cycleThroughTimesOfDay();
-            log.info("New type of day is sent: {}", newTimeOfDay);
-            gameService.updateDtoByTimeOfDay(newTimeOfDay);
-        };
+        final GameDTO gameDTO = gameService.getGameDTO();
+        Runnable task = () -> gameService.updateByTimeOfDay(gameDTO);
         scheduler.scheduleAtFixedRate(task, 0, 60, TimeUnit.SECONDS);
     }
 
     public void scheduleWeatherTypeUpdate() {
-        Runnable task = () -> {
-            WeatherType newWeatherType = dayWeatherService.getRandomWeatherType();
-            log.info("Next weather type is sent: {}", newWeatherType);
-            GameDTO gameDTO = gameService.getGameDTO();
-            gameService.updateDtoByWeatherType(newWeatherType);
-        };
+        final GameDTO gameDTO = gameService.getGameDTO();
+        Runnable task = () -> gameService.updateByWeatherType(gameDTO);
         scheduler.scheduleAtFixedRate(task, 0, 30, TimeUnit.SECONDS);
     }
 
