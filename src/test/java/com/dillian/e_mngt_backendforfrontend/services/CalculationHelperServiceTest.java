@@ -35,5 +35,4 @@ class CalculationHelperServiceTest {
 
         assertThat(result).isEqualTo(75);
     }
-
 }

@@ -52,23 +52,34 @@ public class GameDTO {
     }
 
     public double getTotalGridLoad() {
-        return CalculationHelperService.sumBuildingPropertyToDouble(BuildingDTO::getGridLoad, buildings);    }
+        return CalculationHelperService.sumBuildingPropertyToDouble(BuildingDTO::getGridLoad, buildings);
+    }
 
     public double getGridCapacity() {
-        return CalculationHelperService.sumBuildingPropertyToDouble(BuildingDTO::getGridCapacity, buildings);    }
+        return CalculationHelperService.sumBuildingPropertyToDouble(BuildingDTO::getGridCapacity, buildings);
+    }
 
     public double getEnergyConsumption() {
-        return CalculationHelperService.sumBuildingPropertyToDouble(BuildingDTO::getEnergyConsumption, buildings);
+        if (energyConsumption == 0) {
+            return CalculationHelperService.sumBuildingPropertyToDouble(BuildingDTO::getEnergyConsumption, buildings);
+        }
+        return energyConsumption;
     }
 
     public double getEnergyProduction() {
-        return CalculationHelperService.sumBuildingPropertyToDouble(BuildingDTO::getEnergyProduction, buildings);    }
+        if (energyProduction == 0) {
+            return CalculationHelperService.sumBuildingPropertyToDouble(BuildingDTO::getEnergyProduction, buildings);
+        }
+        return energyProduction;
+    }
 
     public double getSolarPanelAmount() {
-        return CalculationHelperService.sumBuildingPropertyToDouble(BuildingDTO::getSolarPanelAmount, buildings);    }
+        return CalculationHelperService.sumBuildingPropertyToDouble(BuildingDTO::getSolarPanelAmount, buildings);
+    }
 
     public double getSolarPanelCapacity() {
-        return CalculationHelperService.sumBuildingPropertyToDouble(BuildingDTO::getSolarPanelCapacity, buildings);    }
+        return CalculationHelperService.sumBuildingPropertyToDouble(BuildingDTO::getSolarPanelCapacity, buildings);
+    }
 
     public double getGoldIncome() {
         return CalculationHelperService.sumBuildingPropertyToDouble(BuildingDTO::getGoldIncome, buildings);
@@ -87,8 +98,8 @@ public class GameDTO {
     }
 
     public double getHouseHolds() {
-        return CalculationHelperService.sumBuildingPropertyToDouble(BuildingDTO::getHouseHolds, buildings);    }
-
+        return CalculationHelperService.sumBuildingPropertyToDouble(BuildingDTO::getHouseHolds, buildings);
+    }
 
 
     public static class GameDTOBuilder {

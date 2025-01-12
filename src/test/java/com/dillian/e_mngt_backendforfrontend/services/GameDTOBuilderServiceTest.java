@@ -55,7 +55,7 @@ class GameDTOBuilderServiceTest {
 
         assertThat(building.getSolarPanelSet()).isNotNull();
         assertThat(building.getSolarPanelAmount()).isEqualTo(2);
-        assertThat(building.getEnergyProduction()).isEqualTo(120);
+        assertThat(building.getEnergyProduction()).isEqualTo(20);
         assertThat(building.getGoldIncome()).isEqualTo(2);
         assertThat(building.getResearchIncome()).isEqualTo(2);
         assertThat(building.getEnvironmentalIncome()).isEqualTo(2);
@@ -70,8 +70,8 @@ class GameDTOBuilderServiceTest {
 
         assertThat(result.getTotalGridLoad()).isEqualTo(1);
         assertThat(result.getGridCapacity()).isEqualTo(1);
-        assertThat(result.getEnergyConsumption()).isEqualTo(100);
         assertThat(result.getEnergyProduction()).isEqualTo(100);
+        assertThat(result.getEnergyConsumption()).isEqualTo(100);
         assertThat(result.getSolarPanelAmount()).isEqualTo(1);
         assertThat(result.getSolarPanelCapacity()).isEqualTo(1);
         assertThat(result.getHouseHolds()).isEqualTo(1);
@@ -92,7 +92,6 @@ class GameDTOBuilderServiceTest {
         assertThat(result.getEnergyProduction()).isEqualTo(75);
         assertThat(result.getEnergyConsumption()).isEqualTo(225);
     }
-
 
     private static GameDTO getGameDTO() {
         final BuildingDTO building = new BuildingDTO(1L, "", "",0, "",

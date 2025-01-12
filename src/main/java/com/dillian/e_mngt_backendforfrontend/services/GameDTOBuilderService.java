@@ -37,7 +37,8 @@ public class GameDTOBuilderService {
 
     public GameDTO updateStats(GameDTO gameDTO) {
         GameDTO.GameDTOBuilder gameDTOBuilder = new GameDTO.GameDTOBuilder().updateValues(gameDTO.getBuildings());
-        return gameDTOBuilder.build(gameDTO.getBuildings(), gameDTO.getSupervisor());
+        final GameDTO updatedGameDTO = gameDTOBuilder.build(gameDTO.getBuildings(), gameDTO.getSupervisor());
+        return updatedGameDTO;
     }
 
     public GameDTO updateDTOByTimeOfDay(GameDTO gameDTO) {
