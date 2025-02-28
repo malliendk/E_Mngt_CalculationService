@@ -5,14 +5,16 @@ import lombok.Getter;
 @Getter
 public enum WeatherType implements FactorProvider {
 
-    SUNNY(1.5),
-    MODERATE(1),
-    OVERCAST(0.5),
-    RAINY(0.25);
+    SUNNY("sunny", 1.5),
+    MODERATE("moderate", 1),
+    OVERCAST("overcast", 0.5),
+    RAINY("rainy", 0.25);
 
+    private final String name;
     private final double generationFactor;
 
-    WeatherType(double generationFactor) {
+    WeatherType(final String name, double generationFactor) {
+        this.name = name;
         this.generationFactor = generationFactor;
     }
 

@@ -15,20 +15,20 @@ public class BuildingDTO {
     private final String description;
     private final int price;
     private final String imageUri;
-    private final double gridCapacity;
-    private final double houseHolds;
-    private final double gridLoad;
-    private final double energyConsumption;
-    private final double solarPanelAmount;
+    private final int gridCapacity;
+    private final int houseHolds;
+    private final int energyConsumption;
+    @Setter
+    private int solarPanelAmount;
     private final SolarPanelSetDTO solarPanelSet;
-    private final double solarPanelCapacity;
-    private final double popularityIncome;
+    private final int solarPanelCapacity;
+    private final int popularityIncome;
     @Setter
-    private double energyProduction;
+    private int energyProduction;
     @Setter
-    private double goldIncome;
+    private int goldIncome;
     @Setter
-    private double researchIncome;
+    private int researchIncome;
     @Setter
-    private double environmentalIncome;
+    private int environmentalIncome;
 }

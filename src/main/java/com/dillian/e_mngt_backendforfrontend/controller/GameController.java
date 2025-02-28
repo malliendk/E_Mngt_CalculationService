@@ -1,8 +1,9 @@
 package com.dillian.e_mngt_backendforfrontend.controller;
 
-import com.dillian.e_mngt_backendforfrontend.dtos.GameDTO;
+import com.dillian.e_mngt_backendforfrontend.dtos.ExtendedGameDTO;
+import com.dillian.e_mngt_backendforfrontend.dtos.InitiateDTO;
 import com.dillian.e_mngt_backendforfrontend.services.GameService;
-import com.dillian.e_mngt_backendforfrontend.services.schedulers.SchedulerStartService;
+import com.dillian.e_mngt_backendforfrontend.services.schedulers.StartSchedulersService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -14,21 +15,22 @@ import org.springframework.web.bind.annotation.*;
 public class GameController {
 
     private final GameService gameService;
-    private final SchedulerStartService schedulerService;
+    private final StartSchedulersService schedulerService;
 
     @PostMapping()
-    public void startGame(@RequestBody GameDTO gameDTO) {
-        gameService.buildGameDTO(gameDTO);
+    public void startGame(@RequestBody InitiateDTO initiateDTO) {
+        log.info("Starting game {}", initiateDTO);
+        gameService.buildGameDTO(initiateDTO);
         schedulerService.startSchedulers();
     }
 
     @GetMapping
-    public GameDTO getGameDto() {
-        return gameService.getGameDTO();
+    public ExtendedGameDTO getGameDto() {
+        return gameService.getExtendedGameDTO();
     }
 
-    @PutMapping("update")
-    public GameDTO updateGame(@RequestBody GameDTO gameDTO) {
-        return gameService.buildGameDTO(gameDTO);
+    @PutMapping()
+    public ExtendedGameDTO updateGame(@RequestBody InitiateDTO initiateDTO) {
+        return gameService.buildGameDTO(initiateDTO);
     }
 }

@@ -1,7 +1,7 @@
 package com.dillian.e_mngt_backendforfrontend.services.schedulers;
 
-import com.dillian.e_mngt_backendforfrontend.dtos.GameDTO;
-import com.dillian.e_mngt_backendforfrontend.services.DayWeatherService;
+import com.dillian.e_mngt_backendforfrontend.dtos.ExtendedGameDTO;
+import com.dillian.e_mngt_backendforfrontend.services.DTObuilder.DayWeatherService;
 import com.dillian.e_mngt_backendforfrontend.services.GameService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,23 +21,23 @@ public class ScheduledUpdateService {
     private final GameService gameService;
 
     public void scheduleTimeOfDayUpdate() {
-        final GameDTO gameDTO = gameService.getGameDTO();
-        Runnable task = () -> gameService.updateByTimeOfDay(gameDTO);
+        final ExtendedGameDTO extendedGameDTO = gameService.getExtendedGameDTO();
+        Runnable task = () -> gameService.updateByTimeOfDay(extendedGameDTO);
         scheduler.scheduleAtFixedRate(task, 0, 60, TimeUnit.SECONDS);
     }
 
     public void scheduleWeatherTypeUpdate() {
-        final GameDTO gameDTO = gameService.getGameDTO();
-        Runnable task = () -> gameService.updateByWeatherType(gameDTO);
+        final ExtendedGameDTO extendedGameDTO = gameService.getExtendedGameDTO();
+        Runnable task = () -> gameService.updateByWeatherType(extendedGameDTO);
         scheduler.scheduleAtFixedRate(task, 0, 30, TimeUnit.SECONDS);
     }
 
     public void scheduleIncomeUpdate() {
         Runnable task = () -> {
-            GameDTO gameDTO = gameService.getGameDTO();
-            gameService.addIncome(gameDTO);
-            log.info("Next income is sent: {}", gameDTO);
+            ExtendedGameDTO extendedGameDTO = gameService.getExtendedGameDTO();
+            gameService.addIncome(extendedGameDTO);
+            log.info("Next income is sent: {}", extendedGameDTO);
         };
-        scheduler.scheduleAtFixedRate(task, 0, 240, TimeUnit.SECONDS);
+        scheduler.scheduleAtFixedRate(task, 0, 60, TimeUnit.SECONDS);
     }
 }

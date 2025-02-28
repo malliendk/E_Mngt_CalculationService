@@ -1,7 +1,7 @@
 package com.dillian.e_mngt_backendforfrontend.dtos;
 
 
-import com.dillian.e_mngt_backendforfrontend.Constants;
+import com.dillian.e_mngt_backendforfrontend.constants.SolarPanelValues;
 import lombok.NoArgsConstructor;
 
 
@@ -9,18 +9,18 @@ import lombok.NoArgsConstructor;
 public class SolarPanelSetDTO {
 
     public int getEnvironmentIncome() {
-        return Constants.SOLAR_PANEL_BASIC_ENVIRONMENTAL_INCOME;
+        return SolarPanelValues.SOLAR_PANEL_BASIC_ENVIRONMENTAL_INCOME;
     }
 
     public int getGoldIncome() {
-        return Constants.SOLAR_PANEL_BASIC_GOLD_INCOME;
+        return SolarPanelValues.SOLAR_PANEL_BASIC_GOLD_INCOME;
     }
 
     public int getResearchIncome() {
-        return Constants.SOLAR_PANEL_BASIC_RESEARCH;
+        return SolarPanelValues.SOLAR_PANEL_BASIC_RESEARCH;
     }
 
     public int getEnergyProduction() {
-        return Constants.SOLAR_PANEL_BASIC_PRODUCTION;
+        return SolarPanelValues.SOLAR_PANEL_BASIC_PRODUCTION;
     }
 }

@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.dillian</groupId>
-	<artifactId>E_Mngt_BackendForFrontend</artifactId>
+	<artifactId>BackendForFrontEnd</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>E_Mngt_BackendForFrontend</name>
 	<description>E_Mngt_BackendForFrontend</description>
