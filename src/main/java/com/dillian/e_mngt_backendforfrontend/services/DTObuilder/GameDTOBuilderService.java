@@ -1,20 +1,22 @@
 package com.dillian.e_mngt_backendforfrontend.services.DTObuilder;
 
 import com.dillian.e_mngt_backendforfrontend.constants.StartingValues;
-import com.dillian.e_mngt_backendforfrontend.dtos.*;
+import com.dillian.e_mngt_backendforfrontend.dtos.BuildingDTO;
+import com.dillian.e_mngt_backendforfrontend.dtos.ExtendedGameDTO;
+import com.dillian.e_mngt_backendforfrontend.dtos.InitiateDTO;
+import com.dillian.e_mngt_backendforfrontend.dtos.SolarPanelSetDTO;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import static com.dillian.e_mngt_backendforfrontend.services.DTObuilder.CalculationHelperService.mapSolarProduction;
 import static com.dillian.e_mngt_backendforfrontend.services.DTObuilder.CalculationHelperService.sumBuildingProperty;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class GameDTOBuilderService {
 
     private final BuildingRetrieveService buildingRetrieveService;
@@ -41,13 +43,12 @@ public class GameDTOBuilderService {
         int gridCapacity = sumBuildingProperty(BuildingDTO::getGridCapacity, fullyProcessedBuildings);
         String startingTimeOfDay = StartingValues.TIME_OF_DAY_STARTING_VALUE;
         String startingWeatherType = StartingValues.WEATHER_TYPE_STARTING_VALUE;
-        double gridLoad = (double)(energyProduction - energyConsumption) / gridCapacity;
+        double gridLoad = (double) (energyProduction - energyConsumption) / gridCapacity;
         return ExtendedGameDTO.builder()
                 .id(initiateDTO.getId())
                 .funds(initiateDTO.getFunds())
                 .popularity(initiateDTO.getPopularity())
                 .research(initiateDTO.getResearch())
-                .environmentalScore(initiateDTO.getEnvironmentalScore())
                 .buildings(fullyProcessedBuildings)
                 .energyProduction(energyProduction)
                 .energyConsumption(energyConsumption)
@@ -55,9 +56,11 @@ public class GameDTOBuilderService {
                 .gridLoad(gridLoad)
                 .solarPanelAmount(sumBuildingProperty(BuildingDTO::getSolarPanelAmount, fullyProcessedBuildings))
                 .solarPanelCapacity(sumBuildingProperty(BuildingDTO::getSolarPanelCapacity, fullyProcessedBuildings))
+                .households(sumBuildingProperty(BuildingDTO::getHouseHolds, fullyProcessedBuildings))
                 .goldIncome(sumBuildingProperty(BuildingDTO::getGoldIncome, fullyProcessedBuildings))
                 .researchIncome(sumBuildingProperty(BuildingDTO::getResearchIncome, fullyProcessedBuildings))
                 .popularityIncome(sumBuildingProperty(BuildingDTO::getPopularityIncome, fullyProcessedBuildings))
+                .environmentalScore(sumBuildingProperty(BuildingDTO::getEnvironmentalScore, fullyProcessedBuildings))
                 .timeOfDay(startingTimeOfDay)
                 .weatherType(startingWeatherType)
                 .build();
@@ -73,20 +76,18 @@ public class GameDTOBuilderService {
                             BuildingDTO::setGoldIncome);
                     mapSolarProduction(building, SolarPanelSetDTO::getResearchIncome,
                             BuildingDTO::setResearchIncome);
-                    mapSolarProduction(building, SolarPanelSetDTO::getEnvironmentIncome,
-                            BuildingDTO::setEnvironmentalIncome);
+                    mapSolarProduction(building, SolarPanelSetDTO::getEnvironmentScore,
+                            BuildingDTO::setEnvironmentalScore);
                 });
         return buildings;
     }
 
     private List<BuildingDTO> addSolarPanelsToBuildings(InitiateDTO initiateDTO, List<BuildingDTO> initiateBuildings) {
-        final Map<Long, BuildingDTO> buildingIdMap = initiateBuildings.stream()
-                .collect(Collectors.toMap(BuildingDTO::getId, Function.identity()));
-        for (BuildingRequestDTO buildingRequest : initiateDTO.getBuildingRequests()) {
-            final BuildingDTO building = buildingIdMap.get(buildingRequest.getBuildingId());
-            if (building != null) {
-                building.setSolarPanelAmount(buildingRequest.getSolarPanelAmount());
-            }
+        for (BuildingDTO buildingDTO : initiateBuildings) {
+            initiateDTO.getBuildingRequests().stream()
+                    .filter(buildingRequestDTO -> buildingRequestDTO.getBuildingId().equals(buildingDTO.getId()))
+                    .findFirst()
+                    .ifPresent(buildingRequestDTO -> buildingDTO.setSolarPanelAmount(buildingRequestDTO.getSolarPanelAmount()));
         }
         return initiateBuildings;
     }

@@ -8,8 +8,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SolarPanelSetDTO {
 
-    public int getEnvironmentIncome() {
-        return SolarPanelValues.SOLAR_PANEL_BASIC_ENVIRONMENTAL_INCOME;
+    public int getEnvironmentScore() {
+        return SolarPanelValues.SOLAR_PANEL_BASIC_ENVIRONMENTAL_SCORE;
     }
 
     public int getGoldIncome() {

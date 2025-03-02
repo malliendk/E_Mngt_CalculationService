@@ -1,9 +1,6 @@
 package com.dillian.e_mngt_backendforfrontend.dtos;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 
@@ -11,6 +8,7 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @Setter
+@ToString
 public class MinimizedGameDTO {
 
     private final Long id;
@@ -28,7 +26,6 @@ public class MinimizedGameDTO {
     private final int goldIncome;
     private final int researchIncome;
     private final int popularityIncome;
-    private final int environmentalIncome;
     private String timeOfDay;
     private String weatherType;
     private final List<BuildingRequestDTO> buildingRequests;

@@ -8,6 +8,7 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @Setter
+@ToString
 public class ExtendedGameDTO {
 
     private final Long id;
@@ -25,7 +26,6 @@ public class ExtendedGameDTO {
     private final int goldIncome;
     private final int researchIncome;
     private final int popularityIncome;
-    private final int environmentalIncome;
     private String timeOfDay;
     private String weatherType;
     private final List<BuildingDTO> buildings;

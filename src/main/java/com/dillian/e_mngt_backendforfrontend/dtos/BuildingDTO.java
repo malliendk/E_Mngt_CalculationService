@@ -6,6 +6,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Getter
+@Setter
 @ToString
 @RequiredArgsConstructor
 public class BuildingDTO {
@@ -17,18 +18,13 @@ public class BuildingDTO {
     private final String imageUri;
     private final int gridCapacity;
     private final int houseHolds;
+    private int energyProduction;
     private final int energyConsumption;
-    @Setter
     private int solarPanelAmount;
     private final SolarPanelSetDTO solarPanelSet;
     private final int solarPanelCapacity;
-    private final int popularityIncome;
-    @Setter
-    private int energyProduction;
-    @Setter
+    private int popularityIncome;
     private int goldIncome;
-    @Setter
     private int researchIncome;
-    @Setter
-    private int environmentalIncome;
+    private int environmentalScore;
 }

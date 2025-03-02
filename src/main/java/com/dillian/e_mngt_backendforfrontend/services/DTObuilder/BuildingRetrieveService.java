@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -52,14 +54,17 @@ public class BuildingRetrieveService {
                 .retrieve()
                 .toEntity(new ParameterizedTypeReference<>() {
                 });
-        final List<BuildingDTO> uniqueBuildings = response.getBody();
-        if (uniqueBuildings == null) {
+        final List<BuildingDTO> buildings = response.getBody();
+        if (buildings == null) {
             throw new RuntimeException();
         }
-        Map<Long, BuildingDTO> buildingMap = uniqueBuildings.stream()
-                .collect(Collectors.toMap(BuildingDTO::getId, Function.identity()));
-        return ids.stream()
-                .map(buildingMap::get)
-                .toList();
+        List<BuildingDTO> result = new ArrayList<>();
+        for (Long id : ids) {
+            buildings.stream()
+                    .filter(buildingDTO -> buildingDTO.getId().equals(id))
+                    .findFirst()
+                    .ifPresent(result::add);
+        }
+        return result;
     }
 }

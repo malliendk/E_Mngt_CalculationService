@@ -26,7 +26,7 @@ class CalculationHelperServiceTest {
     }
 
     @Test
-    void mapSolarProduction_enegryProduction_shouldMapSummedValueToBuildingDTO() {
+    void mapSolarProduction_energyProduction_shouldMapSummedValueToBuildingDTO() {
         final BuildingDTO building = getBuildingDTO();
 
         CalculationHelperService.mapSolarProduction(building,
@@ -36,11 +36,11 @@ class CalculationHelperServiceTest {
         CalculationHelperService.mapSolarProduction(building,
                 SolarPanelSetDTO::getGoldIncome, BuildingDTO::setGoldIncome);
         CalculationHelperService.mapSolarProduction(building,
-                SolarPanelSetDTO::getEnvironmentIncome, BuildingDTO::setEnvironmentalIncome);
+                SolarPanelSetDTO::getEnvironmentScore, BuildingDTO::setEnvironmentalScore);
         assertThat(building.getEnergyProduction()).isEqualTo(100);
         assertThat(building.getResearchIncome()).isEqualTo(10);
         assertThat(building.getGoldIncome()).isEqualTo(10);
-        assertThat(building.getEnvironmentalIncome()).isEqualTo(10);
+        assertThat(building.getEnvironmentalScore()).isEqualTo(10);
     }
 
     private static BuildingDTO getBuildingDTO() {
@@ -49,14 +49,12 @@ class CalculationHelperServiceTest {
                 1,
                 1,
                 1,
-                100,
-                10,
                 solarPanelSet,
-                1,
                 1);
+        building.setSolarPanelAmount(10);
         building.setGoldIncome(1);
         building.setResearchIncome(1);
-        building.setEnvironmentalIncome(1);
+        building.setEnvironmentalScore(1);
         building.setEnergyProduction(10);
         return building;
     }

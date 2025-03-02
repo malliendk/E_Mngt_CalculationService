@@ -1,14 +1,14 @@
 package com.dillian.e_mngt_backendforfrontend.services;
 
-import com.dillian.e_mngt_backendforfrontend.dtos.*;
-import com.dillian.e_mngt_backendforfrontend.services.DTObuilder.*;
+import com.dillian.e_mngt_backendforfrontend.GameDTOMapper;
+import com.dillian.e_mngt_backendforfrontend.dtos.ExtendedGameDTO;
+import com.dillian.e_mngt_backendforfrontend.dtos.InitiateDTO;
+import com.dillian.e_mngt_backendforfrontend.dtos.MinimizedGameDTO;
+import com.dillian.e_mngt_backendforfrontend.services.DTObuilder.DayWeatherService;
+import com.dillian.e_mngt_backendforfrontend.services.DTObuilder.GameDTOBuilderService;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Getter
@@ -16,30 +16,25 @@ import java.util.stream.Collectors;
 public class GameService {
 
     private final GameDTOBuilderService GameDTOBuilderService;
-    private ExtendedGameDTO extendedGameDTO;
-
+    private final GameDTOMapper gameDTOMapper;
     private final DayWeatherService dayWeatherService;
 
-    public GameService(final DayWeatherService dayWeatherService, final GameDTOBuilderService GameDTOBuilderService) {
+    private ExtendedGameDTO extendedGameDTO;
+
+    public GameService(final DayWeatherService dayWeatherService, final GameDTOBuilderService GameDTOBuilderService, final GameDTOMapper gameDTOMapper) {
         this.dayWeatherService = dayWeatherService;
         this.GameDTOBuilderService = GameDTOBuilderService;
+        this.gameDTOMapper = gameDTOMapper;
     }
 
-    public ExtendedGameDTO buildGameDTO(InitiateDTO initiateDTO) {
+    public MinimizedGameDTO buildGameDTO(InitiateDTO initiateDTO) {
         ExtendedGameDTO updatedExtendedGameDTO = GameDTOBuilderService.buildGameDTO(initiateDTO);
         this.extendedGameDTO = updatedExtendedGameDTO;
-        return updatedExtendedGameDTO;
+        return gameDTOMapper.toMinimizedGameDTO(updatedExtendedGameDTO);
     }
 
     public MinimizedGameDTO minimizeGameDTO(ExtendedGameDTO extendedGameDTO) {
-        List<BuildingRequestDTO> buildingRequests = new ArrayList<>();
-        for (BuildingDTO building : extendedGameDTO.getBuildings()) {
-            buildingRequests.add(new BuildingRequestDTO(building.getId(), building.getSolarPanelAmount()));
-        }
-        //minimizedGameDTO.setBuildingRequests(buildingRequests);
-        return MinimizedGameDTO.builder(
-                .buildingRequests
-        )
+        return gameDTOMapper.toMinimizedGameDTO(extendedGameDTO);
     }
 
     public void updateByTimeOfDay(ExtendedGameDTO extendedGameDTO) {
