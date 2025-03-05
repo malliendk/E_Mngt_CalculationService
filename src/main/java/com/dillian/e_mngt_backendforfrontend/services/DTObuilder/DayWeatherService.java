@@ -2,7 +2,7 @@ package com.dillian.e_mngt_backendforfrontend.services.DTObuilder;
 
 import com.dillian.e_mngt_backendforfrontend.dtos.BuildingDTO;
 import com.dillian.e_mngt_backendforfrontend.dtos.ExtendedGameDTO;
-import com.dillian.e_mngt_backendforfrontend.dtos.InitiateDTO;
+import com.dillian.e_mngt_backendforfrontend.enums.FactorProvider;
 import com.dillian.e_mngt_backendforfrontend.enums.TimeOfDay;
 import com.dillian.e_mngt_backendforfrontend.enums.WeatherType;
 import lombok.Getter;
@@ -15,20 +15,24 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Random;
 
+import static com.dillian.e_mngt_backendforfrontend.services.DTObuilder.CalculationHelperService.calculateGridLoad;
+
 @Service
 @Getter
 @Slf4j
 public class DayWeatherService {
 
     private final BuildingRetrieveService buildingRetrieveService;
+    private final CalculationHelperService calculationHelperService;
     private List<TimeOfDay> timesOfDay;
     private List<WeatherType> weatherTypes;
     private WeatherType newWeatherType;
     private TimeOfDay newTimeOfDay;
     private int currentIndex = 0;
 
-    public DayWeatherService(final BuildingRetrieveService buildingRetrieveService) {
+    public DayWeatherService(final BuildingRetrieveService buildingRetrieveService, final CalculationHelperService calculationHelperService) {
         this.buildingRetrieveService = buildingRetrieveService;
+        this.calculationHelperService = calculationHelperService;
     }
 
     @EventListener(ApplicationReadyEvent.class)
@@ -62,14 +66,13 @@ public class DayWeatherService {
     public ExtendedGameDTO updateDTOByTimeOfDay(ExtendedGameDTO extendedGameDTO) {
         final List<BuildingDTO> buildings = extendedGameDTO.getBuildings();
         final TimeOfDay timeOfDay = cycleThroughTimesOfDay();
-        int totalEnergyProduction = CalculationHelperService.sumBuildingProperty(
-                BuildingDTO::getEnergyProduction, buildings);
-        int totalEnergyConsumption = CalculationHelperService.sumBuildingProperty(
-                BuildingDTO::getEnergyConsumption, buildings);
-        extendedGameDTO.setEnergyProduction((int)(totalEnergyProduction * timeOfDay.getGenerationFactor()));
-        extendedGameDTO.setEnergyConsumption((int)((totalEnergyConsumption * timeOfDay.getHousingConsumptionFactor()
-                        + totalEnergyConsumption * timeOfDay.getIndustrialConsumptionFactor())));
         extendedGameDTO.setTimeOfDay(timeOfDay.getName());
+        int newEnergyProduction = calculateNewEnergyProduction(buildings, timeOfDay, extendedGameDTO);
+        extendedGameDTO.setEnergyProduction(newEnergyProduction);
+        int newEnergyConsumption = calculateNewEnergyConsumption(buildings, timeOfDay, extendedGameDTO);
+        extendedGameDTO.setEnergyConsumption(newEnergyConsumption);
+        double gridLoad = calculateGridLoad(newEnergyProduction, newEnergyConsumption, extendedGameDTO.getGridCapacity());
+        extendedGameDTO.setGridLoad(gridLoad);
         return extendedGameDTO;
     }
 
@@ -85,11 +88,29 @@ public class DayWeatherService {
     public ExtendedGameDTO updateDTOByWeatherType(ExtendedGameDTO extendedGameDTO) {
         final List<BuildingDTO> buildings = extendedGameDTO.getBuildings();
         WeatherType newWeatherType = getRandomWeatherType();
+        extendedGameDTO.setWeatherType(newWeatherType.getName());
+        int newEnergyProduction = calculateNewEnergyProduction(buildings, newWeatherType, extendedGameDTO);
+        extendedGameDTO.setEnergyProduction(newEnergyProduction);
+        double gridLoad = calculateGridLoad(newEnergyProduction, extendedGameDTO.getEnergyConsumption(), extendedGameDTO.getGridCapacity());
+        extendedGameDTO.setGridLoad(gridLoad);
+        return extendedGameDTO;
+    }
+
+    private int calculateNewEnergyProduction(List<BuildingDTO> buildings, FactorProvider factorProvider, ExtendedGameDTO extendedGameDTO) {
         int totalEnergyProduction = CalculationHelperService.sumBuildingProperty(
                 BuildingDTO::getEnergyProduction, buildings);
-        extendedGameDTO.setEnergyProduction((int)(totalEnergyProduction * newWeatherType.getGenerationFactor()));
-        extendedGameDTO.setWeatherType(newWeatherType.getName());
-        return extendedGameDTO;
+        int powerPlantProduction = CalculationHelperService.sumPowerPlantProduction(buildings);
+        int dayWeatherDependentProduction = totalEnergyProduction - powerPlantProduction;
+        return (int)(dayWeatherDependentProduction * factorProvider.getGenerationFactor() +
+                powerPlantProduction);
+    }
+
+    private int calculateNewEnergyConsumption(List<BuildingDTO> buildings, FactorProvider factorProvider, ExtendedGameDTO extendedGameDTO) {
+        int totalEnergyConsumption = CalculationHelperService.sumBuildingProperty(
+                BuildingDTO::getEnergyConsumption, buildings);
+        int newHousingConsumption = (int)(totalEnergyConsumption * factorProvider.getHousingConsumptionFactor());
+        int newIndustrialConsumption = (int)(totalEnergyConsumption * factorProvider.getIndustrialConsumptionFactor());
+        return newHousingConsumption + newIndustrialConsumption;
     }
 
     private TimeOfDay cycleThroughTimesOfDay() {

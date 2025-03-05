@@ -2,18 +2,18 @@ package com.dillian.e_mngt_backendforfrontend.services.schedulers;
 
 import com.dillian.e_mngt_backendforfrontend.dtos.MinimizedGameDTO;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class StartSchedulersService {
 
-    private final ScheduledUpdateService schedulerService;
+    private final ScheduledUpdateService scheduledUpdateService;
 
     public void startSchedulers(MinimizedGameDTO minimizedGameDTO) {
-        schedulerService.scheduleTimeOfDayUpdate();
-        schedulerService.scheduleWeatherTypeUpdate();
-        schedulerService.scheduleIncomeUpdate();
-        //startSSEService(minimizedGameDTO)
+        log.info("Starting schedulers with game data: {}", minimizedGameDTO);
+        scheduledUpdateService.initSchedulers();
     }
 }

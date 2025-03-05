@@ -13,11 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -47,6 +43,7 @@ public class BuildingRetrieveService {
         List<Long> ids = initiateDTO.getBuildingRequests().stream()
                 .map(BuildingRequestDTO::getBuildingId)
                 .toList();
+        log.info("Get buildings by ids: {}", ids);
         final ResponseEntity<List<BuildingDTO>> response = restClient
                 .post()
                 .uri(ServerURLs.BUILDING_SERVICE_URL + "/ids")
@@ -65,6 +62,7 @@ public class BuildingRetrieveService {
                     .findFirst()
                     .ifPresent(result::add);
         }
+        log.info("buildings successfully retrieved: {}", result);
         return result;
     }
 }

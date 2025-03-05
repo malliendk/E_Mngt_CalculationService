@@ -11,8 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.dillian.e_mngt_backendforfrontend.services.DTObuilder.CalculationHelperService.mapSolarProduction;
-import static com.dillian.e_mngt_backendforfrontend.services.DTObuilder.CalculationHelperService.sumBuildingProperty;
+import static com.dillian.e_mngt_backendforfrontend.services.DTObuilder.CalculationHelperService.*;
 
 @Service
 @AllArgsConstructor
@@ -43,7 +42,7 @@ public class GameDTOBuilderService {
         int gridCapacity = sumBuildingProperty(BuildingDTO::getGridCapacity, fullyProcessedBuildings);
         String startingTimeOfDay = StartingValues.TIME_OF_DAY_STARTING_VALUE;
         String startingWeatherType = StartingValues.WEATHER_TYPE_STARTING_VALUE;
-        double gridLoad = (double) (energyProduction - energyConsumption) / gridCapacity;
+        double gridLoad = calculateGridLoad(energyProduction, energyConsumption, gridCapacity);
         return ExtendedGameDTO.builder()
                 .id(initiateDTO.getId())
                 .funds(initiateDTO.getFunds())
