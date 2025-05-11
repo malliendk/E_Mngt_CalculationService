@@ -29,4 +29,6 @@ public class MinimizedGameDTO {
     private String timeOfDay;
     private String weatherType;
     private final List<BuildingRequestDTO> buildingRequests;
+    private final List<Tile> tiles;
+    private final List<District> districts;
 }

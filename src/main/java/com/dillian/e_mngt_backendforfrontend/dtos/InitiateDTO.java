@@ -9,6 +9,8 @@ public class InitiateDTO {
 
     private Long id;
     private List<BuildingRequestDTO> buildingRequests;
+    private List<Tile> tiles;
+    private List<District> districts;
     private int funds;
     private int popularity;
     private int research;
