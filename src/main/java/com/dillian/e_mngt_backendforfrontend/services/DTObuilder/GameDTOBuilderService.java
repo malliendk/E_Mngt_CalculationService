@@ -2,6 +2,7 @@ package com.dillian.e_mngt_backendforfrontend.services.DTObuilder;
 
 import com.dillian.e_mngt_backendforfrontend.constants.StartingValues;
 import com.dillian.e_mngt_backendforfrontend.dtos.*;
+import com.dillian.e_mngt_backendforfrontend.services.DistrictStatsCalculationService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import static com.dillian.e_mngt_backendforfrontend.services.DTObuilder.Calculat
 public class GameDTOBuilderService {
 
     private final BuildingRetrieveService buildingRetrieveService;
+    private final DistrictStatsCalculationService districtStatsCalculationService;
 
     /**
      * Builds and returns a GameDTO by processing buildings and accumulating income from solar panels.
@@ -40,7 +42,8 @@ public class GameDTOBuilderService {
         String startingTimeOfDay = StartingValues.TIME_OF_DAY_STARTING_VALUE;
         String startingWeatherType = StartingValues.WEATHER_TYPE_STARTING_VALUE;
         double gridLoad = calculateGridLoad(energyProduction, energyConsumption, gridCapacity);
-        log.info("districts: " + initiateDTO.getDistricts());
+        List<District> processedDistricts = districtStatsCalculationService.calculateCumulativeDistrictValues(initiateDTO);
+        log.info("districts: " + processedDistricts);
         return ExtendedGameDTO.builder()
                 .id(initiateDTO.getId())
                 .funds(initiateDTO.getFunds())
@@ -61,7 +64,7 @@ public class GameDTOBuilderService {
                 .timeOfDay(startingTimeOfDay)
                 .weatherType(startingWeatherType)
                 .tiles(initiateDTO.getTiles())
-                .districts(initiateDTO.getDistricts())
+                .districts(processedDistricts)
                 .build();
     }
 

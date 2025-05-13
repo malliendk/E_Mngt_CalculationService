@@ -11,5 +11,6 @@ public class Tile {
 
     private Long id;
     private Long buildingId;
+    private BuildingDTO building;
     private Long districtId;
 }

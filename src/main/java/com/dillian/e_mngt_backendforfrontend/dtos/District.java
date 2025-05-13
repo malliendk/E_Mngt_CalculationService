@@ -13,9 +13,11 @@ import java.util.List;
 public class District {
 
     private Long id;
-    private double energyProduction;
-    private double energyConsumption;
+    private int energyProduction;
+    private int energyConsumption;
+    private int excessBalance;
     private int gridCapacity;
     private double gridLoad;
+    private List<Integer> incomingExcessBalances;
     private List<Tile> tiles;
 }
