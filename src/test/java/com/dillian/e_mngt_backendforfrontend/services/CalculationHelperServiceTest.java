@@ -3,7 +3,7 @@
 //import com.dillian.e_mngt_backendforfrontend.dtos.BuildingDTO;
 //import com.dillian.e_mngt_backendforfrontend.dtos.SolarPanelSetDTO;
 //import com.dillian.e_mngt_backendforfrontend.enums.TimeOfDay;
-//import com.dillian.e_mngt_backendforfrontend.services.DTObuilder.CalculationHelperService;
+//import com.dillian.e_mngt_backendforfrontend.services.utils.CalculationHelperService;
 //import org.junit.jupiter.api.Test;
 //
 //import java.util.List;

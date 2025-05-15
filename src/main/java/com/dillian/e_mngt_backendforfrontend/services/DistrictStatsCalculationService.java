@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.dillian.e_mngt_backendforfrontend.services.DTObuilder.CalculationHelperService.sumBuildingProperty;
+import static com.dillian.e_mngt_backendforfrontend.services.utils.CalculationHelperService.sumBuildingProperty;
 
 @Service
 @Slf4j
@@ -18,23 +18,22 @@ public class DistrictStatsCalculationService {
 
     /**
      * Calculates cumulative values for all districts in the game.
-     * @param initiateDTO The game data transfer object containing all districts.
+     * @param districts The game data transfer object containing all districts.
      * @return a list of fully processed Districts.
      */
-    public List<District> calculateCumulativeDistrictValues(InitiateDTO initiateDTO) {
-        calculateIndividualDistrictValues(initiateDTO);
-        return processExcessBalance(initiateDTO);
+    public List<District> calculateCumulativeDistrictValues(List<District> districts) {
+        calculateIndividualDistrictValues(districts);
+        return processExcessBalance(districts);
     }
 
     /**
      * Processes the excess balance for each district by distributing it to adjacent districts and calculating final balances and grid loads.
-     * @param initiateDTO The game data transfer object containing all districts.
+     * @param districts The game data transfer object containing all districts.
      * @return a list of Districts with their property values fully calculated
      */
-    private List<District> processExcessBalance(InitiateDTO initiateDTO) {
-        List<District> districts = initiateDTO.getDistricts();
+    public List<District> processExcessBalance(List<District> districts) {
 
-        // Map each district to its position in the grid
+                // Map each district to its position in the grid
         Map<District, Point> districtPositions = mapDistrictsToPositions(districts);
 
         // First, distribute excess energy to adjacent districts
@@ -115,11 +114,12 @@ public class DistrictStatsCalculationService {
 
     /**
      * Calculates individual values for each district, such as energy production, energy consumption, and grid capacity.
-     * @param initiateDTO The game data transfer object containing all districts.
+     * @param districts The game data transfer object containing all districts.
      */
-    private void calculateIndividualDistrictValues(InitiateDTO initiateDTO) {
-        for (District district : initiateDTO.getDistricts()) {
+    private void calculateIndividualDistrictValues(List<District> districts) {
+        for (District district : districts) {
             List<BuildingDTO> districtBuildings = district.getTiles().stream().map(Tile::getBuilding).toList();
+            log.info("district buildings: {}", districtBuildings);
 
             final int energyProduction = sumBuildingProperty(BuildingDTO::getEnergyProduction, districtBuildings);
             final int energyConsumption = sumBuildingProperty(BuildingDTO::getEnergyConsumption, districtBuildings);
@@ -133,5 +133,4 @@ public class DistrictStatsCalculationService {
             district.setIncomingExcessBalances(new ArrayList<>());
         }
     }
-
 }

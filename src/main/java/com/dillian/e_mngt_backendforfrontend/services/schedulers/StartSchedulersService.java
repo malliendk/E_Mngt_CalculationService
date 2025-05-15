@@ -10,10 +10,10 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class StartSchedulersService {
 
-    private final ScheduledUpdateService scheduledUpdateService;
+    private final IncomeDayWeatherUpdateService incomeDayWeatherUpdateService;
 
     public void startSchedulers(MinimizedGameDTO minimizedGameDTO) {
         log.info("Starting schedulers with game data: {}", minimizedGameDTO);
-        scheduledUpdateService.initSchedulers();
+        incomeDayWeatherUpdateService.initSchedulers();
     }
 }

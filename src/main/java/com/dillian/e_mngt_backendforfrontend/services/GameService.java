@@ -1,9 +1,7 @@
 package com.dillian.e_mngt_backendforfrontend.services;
 
 import com.dillian.e_mngt_backendforfrontend.GameDTOMapper;
-import com.dillian.e_mngt_backendforfrontend.dtos.ExtendedGameDTO;
-import com.dillian.e_mngt_backendforfrontend.dtos.InitiateDTO;
-import com.dillian.e_mngt_backendforfrontend.dtos.MinimizedGameDTO;
+import com.dillian.e_mngt_backendforfrontend.dtos.*;
 import com.dillian.e_mngt_backendforfrontend.services.DTObuilder.DayWeatherService;
 import com.dillian.e_mngt_backendforfrontend.services.DTObuilder.GameDTOBuilderService;
 import lombok.Getter;
@@ -18,8 +16,9 @@ public class GameService {
     private final GameDTOBuilderService GameDTOBuilderService;
     private final GameDTOMapper gameDTOMapper;
     private final DayWeatherService dayWeatherService;
-
     private ExtendedGameDTO extendedGameDTO;
+    private DayWeatherUpdateDTO dayWeatherUpdateDTO;
+    private IncomeAddDTO incomeAddDTO;
 
     public GameService(final DayWeatherService dayWeatherService, final GameDTOBuilderService GameDTOBuilderService, final GameDTOMapper gameDTOMapper) {
         this.dayWeatherService = dayWeatherService;
@@ -38,19 +37,23 @@ public class GameService {
     }
 
     public void updateByTimeOfDay(ExtendedGameDTO extendedGameDTO) {
-        this.extendedGameDTO = dayWeatherService.updateDTOByTimeOfDay(extendedGameDTO);
+        this.dayWeatherUpdateDTO = dayWeatherService.updateDTOByTimeOfDay(extendedGameDTO.getDistricts());
+        this.extendedGameDTO.setDistricts(this.dayWeatherUpdateDTO.getDistricts());
         log.info("gameDTO successfully updated by time of day: {}", extendedGameDTO);
     }
 
     public void updateByWeatherType(ExtendedGameDTO extendedGameDTO) {
-        this.extendedGameDTO = dayWeatherService.updateDTOByWeatherType(extendedGameDTO);
+        this.dayWeatherUpdateDTO = dayWeatherService.updateDTOByWeatherType(extendedGameDTO.getDistricts());
+        this.extendedGameDTO.setDistricts(this.dayWeatherUpdateDTO.getDistricts());
         log.info("gameDTO successfully updated by weather type: {}", extendedGameDTO);
     }
 
     public void addIncome(ExtendedGameDTO extendedGameDTO) {
-        extendedGameDTO.setFunds(extendedGameDTO.getFunds() + extendedGameDTO.getGoldIncome());
-        extendedGameDTO.setPopularity(extendedGameDTO.getPopularity() + extendedGameDTO.getPopularityIncome());
-        extendedGameDTO.setResearch(extendedGameDTO.getResearch() + extendedGameDTO.getResearchIncome());
+        IncomeAddDTO incomeDTO = new IncomeAddDTO();
+        incomeDTO.setNewFunds(extendedGameDTO.getFunds() + extendedGameDTO.getGoldIncome());
+        incomeDTO.setNewPopularity(extendedGameDTO.getPopularity() + extendedGameDTO.getPopularityIncome());
+        incomeDTO.setNewResearch(extendedGameDTO.getResearch() + extendedGameDTO.getResearchIncome());
+        this.incomeAddDTO = incomeDTO;
         log.info("updated gameDTO: {}", extendedGameDTO);
     }
 }

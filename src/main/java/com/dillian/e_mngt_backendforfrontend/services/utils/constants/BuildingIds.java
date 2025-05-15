@@ -1,4 +1,4 @@
-package com.dillian.e_mngt_backendforfrontend.constants;
+package com.dillian.e_mngt_backendforfrontend.services.utils.constants;
 
 import lombok.Getter;
 

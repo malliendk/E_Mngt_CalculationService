@@ -1,6 +1,6 @@
 package com.dillian.e_mngt_backendforfrontend.services.schedulers;
 
-import com.dillian.e_mngt_backendforfrontend.constants.SchedulerValues;
+import com.dillian.e_mngt_backendforfrontend.services.utils.constants.SchedulerValues;
 import com.dillian.e_mngt_backendforfrontend.dtos.ExtendedGameDTO;
 import com.dillian.e_mngt_backendforfrontend.dtos.MinimizedGameDTO;
 import com.dillian.e_mngt_backendforfrontend.services.GameService;
@@ -21,15 +21,14 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class GameEventService {
 
     private final GameService gameService;
-    private final ScheduledUpdateService scheduledUpdateService;
+    private final IncomeDayWeatherUpdateService incomeDayWeatherUpdateService;
     private final List<SseEmitter> emitters = new CopyOnWriteArrayList<>();
 
-    public GameEventService(GameService gameService, ScheduledUpdateService scheduledUpdateService) {
+    public GameEventService(GameService gameService, IncomeDayWeatherUpdateService incomeDayWeatherUpdateService) {
         this.gameService = gameService;
-        this.scheduledUpdateService = scheduledUpdateService;
+        this.incomeDayWeatherUpdateService = incomeDayWeatherUpdateService;
 
         // Register callback for when all updates complete
-        scheduledUpdateService.setOnAllUpdatesCompleteCallback(this::sendGameUpdatesIfNeeded);
 
         // Also schedule periodic checks in case we miss a callback
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
@@ -93,9 +92,7 @@ public class GameEventService {
      */
     private void sendGameUpdatesIfNeeded() {
         // Only send updates if no scheduled updates are in progress
-        if (!scheduledUpdateService.isUpdateInProgress()) {
-            sendGameUpdates();
-        }
+
     }
 
     /**

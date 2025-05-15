@@ -29,8 +29,7 @@ public class ExtendedGameDTO {
     private String timeOfDay;
     private String weatherType;
     private final List<BuildingDTO> buildings;
-    private final List<Tile> tiles;
-    private final List<District> districts;
+    private List<District> districts;
 
 
 //    public static class GameDTOBuilder {
