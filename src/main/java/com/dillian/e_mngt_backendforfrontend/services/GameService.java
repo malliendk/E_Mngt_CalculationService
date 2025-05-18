@@ -2,8 +2,7 @@ package com.dillian.e_mngt_backendforfrontend.services;
 
 import com.dillian.e_mngt_backendforfrontend.GameDTOMapper;
 import com.dillian.e_mngt_backendforfrontend.dtos.*;
-import com.dillian.e_mngt_backendforfrontend.services.DTObuilder.DayWeatherService;
-import com.dillian.e_mngt_backendforfrontend.services.DTObuilder.GameDTOBuilderService;
+import com.dillian.e_mngt_backendforfrontend.services.calculations.DayWeatherService;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

@@ -5,7 +5,7 @@ import com.dillian.e_mngt_backendforfrontend.dtos.InitiateDTO;
 import com.dillian.e_mngt_backendforfrontend.dtos.MinimizedGameDTO;
 import com.dillian.e_mngt_backendforfrontend.services.GameService;
 import com.dillian.e_mngt_backendforfrontend.services.schedulers.GameEventService;
-import com.dillian.e_mngt_backendforfrontend.services.schedulers.StartSchedulersService;
+import com.dillian.e_mngt_backendforfrontend.services.schedulers.SchedulerUpdateService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -21,20 +21,27 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 public class GameController {
 
     private final GameService gameService;
-    private final StartSchedulersService schedulerService;
     private final GameEventService gameEventService;
+    private final SchedulerUpdateService schedulerService;
 
     @PostMapping()
     public ResponseEntity<InitiateDTO> startGame(@RequestBody InitiateDTO initiateDTO) {
-        final MinimizedGameDTO minimizedGameDTO = gameService.buildGameDTO(initiateDTO);
-        schedulerService.startSchedulers(minimizedGameDTO);
+        gameService.buildGameDTO(initiateDTO);
+        schedulerService.startSchedulers();
         return ResponseEntity.ok(initiateDTO);
+    }
+
+    @PostMapping("schedulers/shutdown")
+    public ResponseEntity<Void> shutdownSchedulers() {
+        schedulerService.shutdownSchedulers();
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping
     public ResponseEntity<MinimizedGameDTO> getGameDto() {
         final ExtendedGameDTO extendedGameDTO = gameService.getExtendedGameDTO();
         final MinimizedGameDTO minimizedGameDTO = gameService.minimizeGameDTO(extendedGameDTO);
+        log.info("environmentalScore: {}", extendedGameDTO.getEnvironmentalScore());
         return ResponseEntity.ok(minimizedGameDTO);
     }
 
@@ -44,13 +51,14 @@ public class GameController {
         return ResponseEntity.ok(initiateDTO);
     }
 
-    /**
-     * SSE endpoint for subscribing to real-time game updates
-     * @return SSE emitter for streaming game data
-     */
-    @GetMapping(value = "/events", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public SseEmitter subscribeToGameEvents() {
-        log.info("New client subscribing to game events");
-        return gameEventService.subscribe();
+
+    @GetMapping("/income")
+    public SseEmitter streamIncome() {
+        return gameEventService.subscribeToIncome();
+    }
+
+    @GetMapping("/weather")
+    public SseEmitter streamWeather() {
+        return gameEventService.subscribeToWeather();
     }
 }

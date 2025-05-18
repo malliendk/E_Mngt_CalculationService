@@ -1,12 +1,12 @@
-package com.dillian.e_mngt_backendforfrontend.services.DTObuilder;
+package com.dillian.e_mngt_backendforfrontend.services.calculations;
 
-import com.dillian.e_mngt_backendforfrontend.dtos.*;
+import com.dillian.e_mngt_backendforfrontend.dtos.BuildingDTO;
+import com.dillian.e_mngt_backendforfrontend.dtos.DayWeatherUpdateDTO;
+import com.dillian.e_mngt_backendforfrontend.dtos.District;
 import com.dillian.e_mngt_backendforfrontend.enums.FactorProvider;
 import com.dillian.e_mngt_backendforfrontend.enums.TimeOfDay;
 import com.dillian.e_mngt_backendforfrontend.enums.WeatherType;
 import com.dillian.e_mngt_backendforfrontend.services.BuildingService;
-import com.dillian.e_mngt_backendforfrontend.services.DistrictStatsCalculationService;
-import com.dillian.e_mngt_backendforfrontend.services.GameService;
 import com.dillian.e_mngt_backendforfrontend.services.utils.CalculationHelperService;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -28,18 +28,16 @@ public class DayWeatherService {
     private final BuildingService buildingService;
     private final DistrictStatsCalculationService districtStatsCalculationService;
     private final CalculationHelperService calculationHelperService;
-    private final GameService gameService;
     private List<TimeOfDay> timesOfDay;
     private List<WeatherType> weatherTypes;
     private WeatherType newWeatherType;
     private TimeOfDay newTimeOfDay;
     private int currentIndex = 0;
 
-    public DayWeatherService(final BuildingService buildingService, final DistrictStatsCalculationService districtStatsCalculationService, final CalculationHelperService calculationHelperService, final GameService gameService) {
+    public DayWeatherService(final BuildingService buildingService, final DistrictStatsCalculationService districtStatsCalculationService, final CalculationHelperService calculationHelperService) {
         this.buildingService = buildingService;
         this.districtStatsCalculationService = districtStatsCalculationService;
         this.calculationHelperService = calculationHelperService;
-        this.gameService = gameService;
     }
 
     @EventListener(ApplicationReadyEvent.class)
@@ -105,7 +103,7 @@ public class DayWeatherService {
         }
         DayWeatherUpdateDTO updateDTO = new DayWeatherUpdateDTO();
         updateDTO.setWeatherType(newWeatherType.getName());
-        districtStatsCalculationService.processExcessBalance(districts);
+        districtStatsCalculationService.calculateCumulativeDistrictValues(districts);
         updateDTO.setDistricts(districts);
         return updateDTO;
     }

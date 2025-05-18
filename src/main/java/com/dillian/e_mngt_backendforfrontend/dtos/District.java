@@ -1,6 +1,5 @@
 package com.dillian.e_mngt_backendforfrontend.dtos;
 
-
 import lombok.*;
 
 import java.util.List;
@@ -11,13 +10,40 @@ import java.util.List;
 @AllArgsConstructor
 @ToString
 public class District {
-
     private Long id;
     private int energyProduction;
     private int energyConsumption;
-    private int excessBalance;
     private int gridCapacity;
-    private double gridLoad;
-    private List<Integer> incomingExcessBalances;
     private List<Tile> tiles;
+
+    private int netProduction;          // Production minus consumption
+    private double injectedPower;       // Power entering the district
+    private double exportedPower;       // Power leaving the district
+    private double strandedEnergy;      // Excess energy with nowhere to go
+    private double stressLevel;         // Current stress on district grid
+    private List<String> connectedLines; // IDs of connected transmission lines
+
+    private boolean blackout;            // True if stressLevel > 0.5
+    private double monetaryCost;         // Financial impact of stress
+    private double popularityImpact;     // Political impact of stress
+    private int distributedEnergyProduction;    // Energy from housing and public buildings
+    private int centralizedEnergyProduction;    // Energy from power plants, etc.
+    private int localConsumption;               // Consumption from housing and public buildings
+    private int strandedLocalEnergy;            // Local energy that can't enter the grid due to congestion
+
+
+    public void setEnergyProduction(int energyProduction) {
+        this.energyProduction = energyProduction;
+        this.netProduction = this.energyProduction - this.energyConsumption;
+    }
+
+    public void setEnergyConsumption(int energyConsumption) {
+        this.energyConsumption = energyConsumption;
+        this.netProduction = this.energyProduction - this.energyConsumption;
+    }
+
+    public void setStressLevel(double stressLevel) {
+        this.stressLevel = stressLevel;
+        this.blackout = stressLevel > 0.5;
+    }
 }

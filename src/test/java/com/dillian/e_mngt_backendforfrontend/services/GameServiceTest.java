@@ -5,7 +5,7 @@
 //import com.dillian.e_mngt_backendforfrontend.dtos.SolarPanelSetDTO;
 //import com.dillian.e_mngt_backendforfrontend.dtos.SupervisorDTO;
 //import com.dillian.e_mngt_backendforfrontend.enums.WeatherType;
-//import com.dillian.e_mngt_backendforfrontend.services.DTObuilder.DayWeatherService;
+//import com.dillian.e_mngt_backendforfrontend.services.calculations.DayWeatherService;
 //import org.junit.jupiter.api.BeforeEach;
 //import org.junit.jupiter.api.Test;
 //import org.mockito.InjectMocks;

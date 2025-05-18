@@ -57,4 +57,10 @@ public class CalculationHelperService {
                 .map(Tile::getBuilding)
                 .toList();
     }
+
+    public static void removeBuildingsFromDistrict(List<District> districts) {
+        for (District district : districts) {
+            district.getTiles().forEach(tile -> tile.setBuilding(null));
+        }
+    }
 }

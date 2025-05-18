@@ -1,9 +1,8 @@
-package com.dillian.e_mngt_backendforfrontend.services.DTObuilder;
+package com.dillian.e_mngt_backendforfrontend.services;
 
+import com.dillian.e_mngt_backendforfrontend.services.calculations.DistrictStatsCalculationService;
 import com.dillian.e_mngt_backendforfrontend.services.utils.constants.StartingValues;
 import com.dillian.e_mngt_backendforfrontend.dtos.*;
-import com.dillian.e_mngt_backendforfrontend.services.BuildingService;
-import com.dillian.e_mngt_backendforfrontend.services.DistrictStatsCalculationService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -30,8 +29,8 @@ public class GameDTOBuilderService {
      * @return The constructed GameDTO with updated values.
      */
     public ExtendedGameDTO buildGameDTO(InitiateDTO initiateDTO) {
-        final List<BuildingDTO> fullyProcessedBuildings = buildingService.retrieveAndPopulateBuildings(initiateDTO);
-        return calculateStats(initiateDTO, fullyProcessedBuildings);
+        final List<BuildingDTO> populatedBuildings = buildingService.retrieveAndPopulateBuildings(initiateDTO);
+        return calculateStats(initiateDTO, populatedBuildings);
     }
 
     private ExtendedGameDTO calculateStats(InitiateDTO initiateDTO, List<BuildingDTO> fullyProcessedBuildings) {
@@ -42,8 +41,10 @@ public class GameDTOBuilderService {
         String startingWeatherType = StartingValues.WEATHER_TYPE_STARTING_VALUE;
         double gridLoad = calculateGridLoad(energyProduction, energyConsumption, gridCapacity);
         initiateDTO = buildingService.assignTilesToDistricts(initiateDTO, fullyProcessedBuildings);
-        List<District> processedDistricts = districtStatsCalculationService.calculateCumulativeDistrictValues(initiateDTO);
+        List<District> processedDistricts = districtStatsCalculationService.calculateCumulativeDistrictValues(initiateDTO.getDistricts());
         log.info("districts: " + processedDistricts);
+        int envScore = sumBuildingProperty(BuildingDTO::getEnvironmentalScore, fullyProcessedBuildings);
+        log.info("envScore: " + envScore);
         return ExtendedGameDTO.builder()
                 .id(initiateDTO.getId())
                 .funds(initiateDTO.getFunds())
