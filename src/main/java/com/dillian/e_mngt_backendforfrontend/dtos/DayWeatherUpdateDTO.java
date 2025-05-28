@@ -6,11 +6,11 @@ import java.util.List;
 
 @Getter
 @Setter
-@RequiredArgsConstructor
-@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class DayWeatherUpdateDTO {
 
-    private final String timeOfDay;
-    private final String weatherType;
-    private final List<District> districts;
+    private String timeOfDay;
+    private String weatherType;
+    private List<District> districts;
 }

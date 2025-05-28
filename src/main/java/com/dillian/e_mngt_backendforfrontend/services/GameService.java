@@ -30,6 +30,8 @@ public class GameService {
     public void buildGameDTO(InitiateDTO initiateDTO) {
         ExtendedGameDTO updatedExtendedGameDTO = GameDTOBuilderService.buildGameDTO(initiateDTO);
         this.extendedGameDTO = updatedExtendedGameDTO;
+        updateIncomeDTO();
+        updateDayWeatherDTO();
         gameDTOMapper.toMinimizedGameDTO(updatedExtendedGameDTO);
     }
 
@@ -51,12 +53,6 @@ public class GameService {
         log.info("gameDTO successfully updated by weather type: {}", extendedGameDTO);
     }
 
-    private void updateGameDTOWithDayWeather(String newTimeOfDay, String newWeatherType, List<District> updatedDistricts) {
-        this.extendedGameDTO.setTimeOfDay(newTimeOfDay);
-        this.extendedGameDTO.setWeatherType(newWeatherType);
-        this.extendedGameDTO.setDistricts(updatedDistricts);
-    }
-
     public void addIncome(ExtendedGameDTO extendedGameDTO) {
         IncomeAddDTO incomeDTO = new IncomeAddDTO();
         incomeDTO.setNewFunds(extendedGameDTO.getFunds() + extendedGameDTO.getGoldIncome());
@@ -67,10 +63,29 @@ public class GameService {
         log.info("updated gameDTO: {}", extendedGameDTO);
     }
 
-    public void updateGameDTOByIncome(int newFunds, int newPopularity, int newResearch) {
+    private void updateGameDTOWithDayWeather(String newTimeOfDay, String newWeatherType, List<District> updatedDistricts) {
+        this.extendedGameDTO.setTimeOfDay(newTimeOfDay);
+        this.extendedGameDTO.setWeatherType(newWeatherType);
+        this.extendedGameDTO.setDistricts(updatedDistricts);
+    }
+
+    private void updateGameDTOByIncome(int newFunds, int newPopularity, int newResearch) {
         this.extendedGameDTO.setFunds(newFunds);
         this.extendedGameDTO.setPopularity(newPopularity);
         this.extendedGameDTO.setResearch(newResearch);
+    }
+
+
+    private void updateIncomeDTO() {
+        incomeAddDTO.setNewFunds(this.extendedGameDTO.getFunds());
+        incomeAddDTO.setNewPopularity(this.extendedGameDTO.getPopularity());
+        incomeAddDTO.setNewResearch(this.extendedGameDTO.getResearch());
+    }
+
+    private void updateDayWeatherDTO() {
+        dayWeatherUpdateDTO.setTimeOfDay(extendedGameDTO.getTimeOfDay());
+        dayWeatherUpdateDTO.setWeatherType(extendedGameDTO.getWeatherType());
+        dayWeatherUpdateDTO.setDistricts(extendedGameDTO.getDistricts());
     }
 }
 
