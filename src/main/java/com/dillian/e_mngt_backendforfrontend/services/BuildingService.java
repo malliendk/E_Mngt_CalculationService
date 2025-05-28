@@ -14,8 +14,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.function.Function;
 
-import static com.dillian.e_mngt_backendforfrontend.services.utils.CalculationHelperService.mapSolarProduction;
+
 
 @Service
 @AllArgsConstructor
@@ -27,16 +28,11 @@ public class BuildingService {
     public InitiateDTO assignTilesToDistricts(InitiateDTO initiateDTO, List<BuildingDTO> fullyProcesseBuildings) {
         initiateDTO = assignBuildingsToTiles(initiateDTO, fullyProcesseBuildings);
 
-        // Create a map for quick lookup of Districts by id
-        Map<Long, District> districtMap = initiateDTO.getDistricts().stream()
-                .collect(Collectors.toMap(District::getId, district -> district));
+        Map<Long, District> districtMap = initiateDTO.getDistricts().stream().collect(Collectors.toMap(District::getId, district -> district));
 
-        // Clear existing tiles in each district
         for (District district : initiateDTO.getDistricts()) {
             district.setTiles(new ArrayList<>());
         }
-
-        // Iterate through the tiles and assign them to the corresponding District
         for (Tile tile : initiateDTO.getTiles()) {
             Long districtId = tile.getDistrictId();
             if (districtId != null) {
@@ -48,7 +44,6 @@ public class BuildingService {
         }
         return initiateDTO;
     }
-
 
     private InitiateDTO assignBuildingsToTiles(InitiateDTO initiateDTO, List<BuildingDTO> fullyProcessedBuildings) {
         // Create a map for quick lookup of BuildingDTOs by id
@@ -75,62 +70,40 @@ public class BuildingService {
         return initiateDTO;
     }
 
-    public List<BuildingDTO> retrieveAndPopulateBuildings(InitiateDTO initiateDTO) {
-        List<BuildingDTO> buildings = getBuildingsById(initiateDTO);
-        buildings = updateBuildingsWithSolarPanelScore(buildings);
-        return addSolarPanelsToBuildings(initiateDTO, buildings);
-    }
-
-    private List<BuildingDTO> getBuildingsById(InitiateDTO initiateDTO) {
-        List<Long> ids = initiateDTO.getBuildingRequests().stream()
-                .map(BuildingRequestDTO::getBuildingId)
-                .toList();
+    public List<BuildingDTO> getBuildingsById(InitiateDTO initiateDTO) {
+        List<Long> ids = initiateDTO.getBuildingRequests().stream().map(BuildingRequestDTO::getBuildingId).toList();
         log.info("Get buildings by ids: {}", ids);
-        final ResponseEntity<List<BuildingDTO>> response = restClient
-                .post()
-                .uri(ServerURLs.BUILDING_SERVICE_URL + "/ids")
-                .body(ids)
-                .retrieve()
-                .toEntity(new ParameterizedTypeReference<>() {
-                });
+        final ResponseEntity<List<BuildingDTO>> response = restClient.post().uri(ServerURLs.BUILDING_SERVICE_URL + "/ids").body(ids).retrieve().toEntity(new ParameterizedTypeReference<>() {
+        });
         final List<BuildingDTO> buildings = response.getBody();
         if (buildings == null) {
             throw new RuntimeException();
         }
         List<BuildingDTO> result = new ArrayList<>();
         for (Long id : ids) {
-            buildings.stream()
-                    .filter(buildingDTO -> buildingDTO.getId().equals(id))
-                    .findFirst()
-                    .ifPresent(result::add);
+            buildings.stream().filter(buildingDTO -> buildingDTO.getId().equals(id)).findFirst().ifPresent(result::add);
         }
-        log.info("buildings successfully retrieved: {}", result);
+        mapBuildingRequestsToBuildings(initiateDTO.getBuildingRequests(), result);
         return result;
     }
 
-    private List<BuildingDTO> updateBuildingsWithSolarPanelScore(List<BuildingDTO> buildings) {
-        buildings.stream()
-                .filter(building -> building.getSolarPanelSet() != null)
-                .forEach(building -> {
-                    mapSolarProduction(building, SolarPanelSetDTO::getEnergyProduction,
-                            BuildingDTO::setEnergyProduction);
-                    mapSolarProduction(building, SolarPanelSetDTO::getGoldIncome,
-                            BuildingDTO::setGoldIncome);
-                    mapSolarProduction(building, SolarPanelSetDTO::getResearchIncome,
-                            BuildingDTO::setResearchIncome);
-                    mapSolarProduction(building, SolarPanelSetDTO::getEnvironmentScore,
-                            BuildingDTO::setEnvironmentalScore);
-                });
-        return buildings;
-    }
-
-    private List<BuildingDTO> addSolarPanelsToBuildings(InitiateDTO initiateDTO, List<BuildingDTO> initiateBuildings) {
-        for (BuildingDTO buildingDTO : initiateBuildings) {
-            initiateDTO.getBuildingRequests().stream()
-                    .filter(buildingRequestDTO -> buildingRequestDTO.getBuildingId().equals(buildingDTO.getId()))
+    /**
+     * Maps values from BuildingRequestDTO to corresponding BuildingDTO objects
+     * @param buildingRequests List of building requests containing values to map
+     * @param buildings List of building DTOs to apply the values to
+     */
+    private void mapBuildingRequestsToBuildings(List<BuildingRequestDTO> buildingRequests, List<BuildingDTO> buildings) {
+        for (BuildingDTO building : buildings) {
+            buildingRequests.stream()
+                    .filter(request -> request.getBuildingId().equals(building.getId()))
                     .findFirst()
-                    .ifPresent(buildingRequestDTO -> buildingDTO.setSolarPanelAmount(buildingRequestDTO.getSolarPanelAmount()));
+                    .ifPresent(request -> {
+                        building.setSolarPanelAmount(request.getSolarPanelAmount());
+                        building.setEnergyProduction(request.getEnergyProduction());
+                        building.setGoldIncome(request.getGoldIncome());
+                        building.setResearchIncome(request.getResearchIncome());
+                        building.setEnvironmentalScore(request.getEnvironmentalScore());
+                    });
         }
-        return initiateBuildings;
     }
 }

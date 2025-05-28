@@ -26,9 +26,9 @@ public class BuildingIds {
     public static final Long LIBRARY = 51L;
     public static final Long SWIMMING_POOL = 52L;
     public static final Long UNIVERSITY = 53L;
-    public static final Long AQUA_PARK = 50L;
-    public static final Long THEME_PARK = 51L;
-    public static final Long SNOW_WORLD = 52L;
-    public static final Long SHOPPING_RESORT = 53L;
-    public static final Long LABORATORY = 54L;
+    public static final Long AQUA_PARK = 60L;
+    public static final Long THEME_PARK = 61L;
+    public static final Long SNOW_WORLD = 62L;
+    public static final Long SHOPPING_RESORT = 63L;
+    public static final Long LABORATORY = 64L;
 }

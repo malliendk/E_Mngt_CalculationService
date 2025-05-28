@@ -21,7 +21,6 @@ public class BuildingDTO {
     private int energyProduction;
     private final int energyConsumption;
     private int solarPanelAmount;
-    private final SolarPanelSetDTO solarPanelSet;
     private final int solarPanelCapacity;
     private int popularityIncome;
     private int goldIncome;

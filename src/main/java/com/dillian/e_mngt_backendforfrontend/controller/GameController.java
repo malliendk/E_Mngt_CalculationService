@@ -41,7 +41,6 @@ public class GameController {
     public ResponseEntity<MinimizedGameDTO> getGameDto() {
         final ExtendedGameDTO extendedGameDTO = gameService.getExtendedGameDTO();
         final MinimizedGameDTO minimizedGameDTO = gameService.minimizeGameDTO(extendedGameDTO);
-        log.info("environmentalScore: {}", extendedGameDTO.getEnvironmentalScore());
         return ResponseEntity.ok(minimizedGameDTO);
     }
 
@@ -52,13 +51,18 @@ public class GameController {
     }
 
 
-    @GetMapping("/income")
-    public SseEmitter streamIncome() {
-        return gameEventService.subscribeToIncome();
+    @GetMapping(value = "/income-stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public SseEmitter streamIncomeUpdates() {
+        log.info("SSE endpoint called for income stream");
+        return gameEventService.createIncomeStream();
     }
 
-    @GetMapping("/weather")
-    public SseEmitter streamWeather() {
-        return gameEventService.subscribeToWeather();
-    }
-}
+    @GetMapping(value = "/day-weather-stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public SseEmitter streamdayWeatherUpdates() {
+        log.info("SSE endpoint called for day-weather stream");
+        return gameEventService.createDayWeatherStream();
+    }}
+
+
+
+

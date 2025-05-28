@@ -53,8 +53,8 @@ public class SchedulerUpdateService {
                     ExtendedGameDTO extendedGameDTO = gameService.getExtendedGameDTO();
                     gameService.updateByTimeOfDay(extendedGameDTO);
                     log.info("Time of day update completed");
-                }, SchedulerValues.DAYTIME_SCHEDULER_INITIAL_DELAY,
-                SchedulerValues.DAYTIME_UPDATE_SECONDS,
+                }, 15,
+                60,
                 TimeUnit.SECONDS);
     }
 
@@ -63,8 +63,8 @@ public class SchedulerUpdateService {
                     ExtendedGameDTO extendedGameDTO = gameService.getExtendedGameDTO();
                     gameService.updateByWeatherType(extendedGameDTO);
                     log.info("Weather type update completed");
-                }, SchedulerValues.WEATHER_SCHEDULER_INITIAL_DELAY,
-                SchedulerValues.WEATHER_UPDATE_SECONDS,
+                }, 45,
+                60,
                 TimeUnit.SECONDS);
     }
 
@@ -73,8 +73,8 @@ public class SchedulerUpdateService {
                     ExtendedGameDTO extendedGameDTO = gameService.getExtendedGameDTO();
                     gameService.addIncome(extendedGameDTO);
                     log.info("Income update completed: {}", extendedGameDTO);
-                }, SchedulerValues.INCOME_SCHEDULER_INITIAL_DELAY,
-                SchedulerValues.INCOME_UPDATE_SECONDS,
+                }, 30,
+                30,
                 TimeUnit.SECONDS);
     }
 }

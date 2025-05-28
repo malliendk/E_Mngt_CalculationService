@@ -29,7 +29,7 @@ public class GameDTOBuilderService {
      * @return The constructed GameDTO with updated values.
      */
     public ExtendedGameDTO buildGameDTO(InitiateDTO initiateDTO) {
-        final List<BuildingDTO> populatedBuildings = buildingService.retrieveAndPopulateBuildings(initiateDTO);
+        final List<BuildingDTO> populatedBuildings = buildingService.getBuildingsById(initiateDTO);
         return calculateStats(initiateDTO, populatedBuildings);
     }
 
@@ -42,9 +42,6 @@ public class GameDTOBuilderService {
         double gridLoad = calculateGridLoad(energyProduction, energyConsumption, gridCapacity);
         initiateDTO = buildingService.assignTilesToDistricts(initiateDTO, fullyProcessedBuildings);
         List<District> processedDistricts = districtStatsCalculationService.calculateCumulativeDistrictValues(initiateDTO.getDistricts());
-        log.info("districts: " + processedDistricts);
-        int envScore = sumBuildingProperty(BuildingDTO::getEnvironmentalScore, fullyProcessedBuildings);
-        log.info("envScore: " + envScore);
         return ExtendedGameDTO.builder()
                 .id(initiateDTO.getId())
                 .funds(initiateDTO.getFunds())

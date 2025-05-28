@@ -160,9 +160,6 @@ public class PowerSystemService {
         }
     }
 
-    /**
-     * Calculate stress levels for each district
-     */
     private void calculateStressLevels() {
         for (District district : districts.values()) {
             // Total power in the district: netProduction + injectedPower - exportedPower
@@ -171,30 +168,62 @@ public class PowerSystemService {
             // Preserve any existing stranded energy from power distribution phase and local congestion
             double existingStrandedEnergy = district.getStrandedEnergy();
 
-            // Calculate stress from multiple scenarios:
-            // 1. Power exceeding grid capacity
-            // 2. Power that couldn't be distributed due to transmission constraints
-            // 3. Local generation that couldn't feed into the grid (already included in existingStrandedEnergy)
-
+            // Check if district is overloaded (exceeding grid capacity)
             if (totalPowerInDistrict > district.getGridCapacity()) {
                 // Additional stranded energy due to exceeding grid capacity
                 double additionalStrandedEnergy = totalPowerInDistrict - district.getGridCapacity();
                 district.setStrandedEnergy(existingStrandedEnergy + additionalStrandedEnergy);
-            }
-            // If totalPowerInDistrict <= gridCapacity, keep the existing stranded energy
-            // (which includes both local congestion and transmission constraints)
-
-            // Calculate stress level based on total stranded energy
-            if (district.getStrandedEnergy() > 0) {
-                district.setStressLevel(district.getStrandedEnergy() / district.getGridCapacity());
+                // Set blackout flag if severely overloaded
+                district.setBlackout(true);
             } else {
-                district.setStressLevel(0);
+                // No blackout from grid overload
+                district.setBlackout(false);
             }
+
+            // Calculate stress level based on absolute stranded energy, not relative to capacity
+            // Stress should be based on the actual impact of stranded energy, not grid size
+
+            // Define stress levels based on absolute stranded energy amounts
+            double stressLevel = getStressLevel(district);
+
+            district.setStressLevel(Math.min(1.0, stressLevel)); // Cap at 1.0
 
             // Calculate monetary cost and popularity impact
             district.setMonetaryCost(calculateMonetaryCost(district.getStressLevel()));
             district.setPopularityImpact(calculatePopularityImpact(district.getStressLevel()));
         }
+    }
+
+    private static double getStressLevel(final District district) {
+        double strandedEnergy = district.getStrandedEnergy();
+        double stressLevel = 0.0;
+
+        if (strandedEnergy > 0) {
+            // Progressive stress calculation based on absolute stranded energy
+            // These thresholds can be adjusted based on your game balance
+            if (strandedEnergy >= 100000) {
+                // Very high stress for massive stranded energy
+                stressLevel = 0.8 + Math.min(0.2, (strandedEnergy - 100000) / 100000 * 0.2);
+            } else if (strandedEnergy >= 50000) {
+                // High stress
+                stressLevel = 0.5 + (strandedEnergy - 50000) / 50000 * 0.3;
+            } else if (strandedEnergy >= 20000) {
+                // Moderate stress
+                stressLevel = 0.3 + (strandedEnergy - 20000) / 30000 * 0.2;
+            } else if (strandedEnergy >= 5000) {
+                // Low stress
+                stressLevel = 0.1 + (strandedEnergy - 5000) / 15000 * 0.2;
+            } else {
+                // Minimal stress
+                stressLevel = strandedEnergy / 5000 * 0.1;
+            }
+        }
+
+        // Additional stress from blackout condition
+        if (district.isBlackout()) {
+            stressLevel = Math.max(stressLevel, 0.8); // Minimum stress of 0.8 for blackouts
+        }
+        return stressLevel;
     }
 
 
@@ -337,8 +366,6 @@ public class PowerSystemService {
                     .map(tile -> tile.getBuilding())
                     .filter(Objects::nonNull)
                     .collect(Collectors.toList());
-
-            log.info("district buildings: {}", districtBuildings);
 
             final int energyProduction = sumBuildingProperty(BuildingDTO::getEnergyProduction, districtBuildings);
             final int energyConsumption = sumBuildingProperty(BuildingDTO::getEnergyConsumption, districtBuildings);

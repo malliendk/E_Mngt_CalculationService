@@ -7,6 +7,9 @@ import com.dillian.e_mngt_backendforfrontend.dtos.MinimizedGameDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Mapper(componentModel = "spring")
 public interface GameDTOMapper {
 
@@ -14,6 +17,7 @@ public interface GameDTOMapper {
     MinimizedGameDTO toMinimizedGameDTO(ExtendedGameDTO extendedGameDTO);
 
     default BuildingRequestDTO toBuildingRequestDTO(BuildingDTO buildingDTO) {
-        return new BuildingRequestDTO(buildingDTO.getId(), buildingDTO.getSolarPanelAmount());
+        return new BuildingRequestDTO(buildingDTO.getId(), buildingDTO.getSolarPanelAmount(), buildingDTO.getEnergyProduction(),
+                buildingDTO.getGoldIncome(), buildingDTO.getResearchIncome(), buildingDTO.getEnvironmentalScore());
     }
 }

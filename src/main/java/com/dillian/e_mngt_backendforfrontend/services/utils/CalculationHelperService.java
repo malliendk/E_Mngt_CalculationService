@@ -16,19 +16,19 @@ import java.util.function.ToIntFunction;
 public class CalculationHelperService {
 
     static public double calculateGridLoad(int energyProduction, int energyConsumption, int gridCapacity) {
-        return (double)(energyProduction - energyConsumption) / gridCapacity;
+        return (double) (energyProduction - energyConsumption) / gridCapacity;
     }
 
+
     static public int sumPowerPlantProduction(List<BuildingDTO> buildings) {
-        int totalPowerPlantProduction = (int)buildings.stream()
+        int totalPowerPlantProduction = buildings.stream()
+                .filter(Objects::nonNull)
                 .filter(buildingDTO -> buildingDTO.getId().equals(BuildingIds.COAL_PLANT) ||
                         buildingDTO.getId().equals(BuildingIds.GAS_PLANT) ||
                         buildingDTO.getId().equals(BuildingIds.HYDROGEN_PLANT) ||
                         buildingDTO.getId().equals(BuildingIds.NUCLEAR_PLANT))
-                .mapToDouble(BuildingDTO::getEnergyProduction)
+                .mapToInt(BuildingDTO::getEnergyProduction)
                 .sum();
-        log.info("Successfully calculated power plant production of {} buildings: {}",
-                buildings.size(), totalPowerPlantProduction);
         return totalPowerPlantProduction;
     }
 
@@ -44,12 +44,6 @@ public class CalculationHelperService {
                 .filter(Objects::nonNull)
                 .mapToDouble(building -> getter.applyAsDouble(building) * dayOrWeatherFactor)
                 .sum();
-    }
-
-    public static void mapSolarProduction(BuildingDTO building, ToIntFunction<SolarPanelSetDTO> solarPanelGetter,
-                                          BiConsumer<BuildingDTO, Integer> setterMethod) {
-        int incomePerBuilding = solarPanelGetter.applyAsInt(building.getSolarPanelSet()) * building.getSolarPanelAmount();
-        setterMethod.accept(building, incomePerBuilding);
     }
 
     public static List<BuildingDTO> getBuildingsFromTiles(District district) {
