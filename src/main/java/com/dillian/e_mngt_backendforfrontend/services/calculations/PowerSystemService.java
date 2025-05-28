@@ -88,11 +88,8 @@ public class PowerSystemService {
 
             iteration++;
         }
-
-        // Calculate final stress levels for each district
         calculateStressLevels();
 
-        // Prepare results
         Map<String, Object> results = new HashMap<>();
         results.put("converged", systemConverged);
         results.put("iterations", iteration);
@@ -221,7 +218,7 @@ public class PowerSystemService {
 
         // Additional stress from blackout condition
         if (district.isBlackout()) {
-            stressLevel = Math.max(stressLevel, 0.8); // Minimum stress of 0.8 for blackouts
+            stressLevel = Math.max(stressLevel, 0.8);
         }
         return stressLevel;
     }

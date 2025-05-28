@@ -93,16 +93,17 @@ public class BuildingService {
      * @param buildings List of building DTOs to apply the values to
      */
     private void mapBuildingRequestsToBuildings(List<BuildingRequestDTO> buildingRequests, List<BuildingDTO> buildings) {
-        for (BuildingDTO building : buildings) {
+        for (BuildingDTO buildingDTO : buildings) {
             buildingRequests.stream()
-                    .filter(request -> request.getBuildingId().equals(building.getId()))
+                    .filter(request -> request.getBuildingId().equals(buildingDTO.getId()))
                     .findFirst()
                     .ifPresent(request -> {
-                        building.setSolarPanelAmount(request.getSolarPanelAmount());
-                        building.setEnergyProduction(request.getEnergyProduction());
-                        building.setGoldIncome(request.getGoldIncome());
-                        building.setResearchIncome(request.getResearchIncome());
-                        building.setEnvironmentalScore(request.getEnvironmentalScore());
+                        buildingDTO.setSolarPanelAmount(request.getSolarPanelAmount());
+                        buildingDTO.setEnergyProduction(request.getEnergyProduction());
+                        buildingDTO.setPopularityIncome(request.getPopularityIncome());
+                        buildingDTO.setGoldIncome(request.getGoldIncome());
+                        buildingDTO.setResearchIncome(request.getResearchIncome());
+                        buildingDTO.setEnvironmentalScore(request.getEnvironmentalScore());
                     });
         }
     }

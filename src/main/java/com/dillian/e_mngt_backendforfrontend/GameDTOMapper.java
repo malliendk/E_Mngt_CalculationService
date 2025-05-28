@@ -17,7 +17,12 @@ public interface GameDTOMapper {
     MinimizedGameDTO toMinimizedGameDTO(ExtendedGameDTO extendedGameDTO);
 
     default BuildingRequestDTO toBuildingRequestDTO(BuildingDTO buildingDTO) {
-        return new BuildingRequestDTO(buildingDTO.getId(), buildingDTO.getSolarPanelAmount(), buildingDTO.getEnergyProduction(),
-                buildingDTO.getGoldIncome(), buildingDTO.getResearchIncome(), buildingDTO.getEnvironmentalScore());
+        return new BuildingRequestDTO(buildingDTO.getId(),
+                buildingDTO.getSolarPanelAmount(),
+                buildingDTO.getEnergyProduction(),
+                buildingDTO.getGoldIncome(),
+                buildingDTO.getPopularityIncome(),
+                buildingDTO.getResearchIncome(),
+                buildingDTO.getEnvironmentalScore());
     }
 }

@@ -30,9 +30,13 @@ public class GameService {
     public void buildGameDTO(InitiateDTO initiateDTO) {
         ExtendedGameDTO updatedExtendedGameDTO = GameDTOBuilderService.buildGameDTO(initiateDTO);
         this.extendedGameDTO = updatedExtendedGameDTO;
-        updateIncomeDTO();
-        updateDayWeatherDTO();
         gameDTOMapper.toMinimizedGameDTO(updatedExtendedGameDTO);
+        if (this.incomeAddDTO != null) {
+            updateIncomeDTO();
+        }
+        if (this.dayWeatherUpdateDTO != null) {
+            updateDayWeatherDTO();
+        }
     }
 
     public MinimizedGameDTO minimizeGameDTO(ExtendedGameDTO extendedGameDTO) {
@@ -74,7 +78,6 @@ public class GameService {
         this.extendedGameDTO.setPopularity(newPopularity);
         this.extendedGameDTO.setResearch(newResearch);
     }
-
 
     private void updateIncomeDTO() {
         incomeAddDTO.setNewFunds(this.extendedGameDTO.getFunds());

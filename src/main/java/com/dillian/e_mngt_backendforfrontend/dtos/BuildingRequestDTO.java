@@ -17,6 +17,7 @@ public class BuildingRequestDTO {
     private int solarPanelAmount;
     private int energyProduction;
     private int goldIncome;
+    private int popularityIncome;
     private int researchIncome;
     private int environmentalScore;
 }

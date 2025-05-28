@@ -14,9 +14,15 @@ public class District {
     private int energyProduction;
     private int energyConsumption;
     private int gridCapacity;
+    private int goldIncome;
+    private int popularityIncome;
+    private int researchIncome;
+    private int environmentalScore;
+    private int solarPanelCapacity;
+    private int solarPanelAmount;
     private List<Tile> tiles;
 
-    private int netProduction;          // Production minus consumption
+    private int netProduction;
     private double injectedPower;       // Power entering the district
     private double exportedPower;       // Power leaving the district
     private double strandedEnergy;      // Excess energy with nowhere to go

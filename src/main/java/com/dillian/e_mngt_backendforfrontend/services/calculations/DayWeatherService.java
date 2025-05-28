@@ -81,10 +81,11 @@ public class DayWeatherService {
             district.setEnergyConsumption(newEnergyConsumption);
         }
         districtStatsCalculationService.calculateCumulativeDistrictValues(gameDTO.getDistricts());
-        return new DayWeatherUpdateDTO(
-                timeOfDay.getName(),
-                randomWeatherType.getName(),
-                gameDTO.getDistricts());
+        DayWeatherUpdateDTO updateDayWeatherDTO = new DayWeatherUpdateDTO();
+        updateDayWeatherDTO.setWeatherType(newWeatherType.getName());
+        updateDayWeatherDTO.setTimeOfDay(timeOfDay.getName());
+        updateDayWeatherDTO.setDistricts(gameDTO.getDistricts());
+        return updateDayWeatherDTO;
     }
 
     /**
@@ -105,10 +106,12 @@ public class DayWeatherService {
             district.setEnergyProduction(newEnergyProduction);
         }
         districtStatsCalculationService.calculateCumulativeDistrictValues(gameDTO.getDistricts());
-        return new DayWeatherUpdateDTO(
-                newWeatherType.getName(),
-                timeOfDay,
-                gameDTO.getDistricts());
+
+        DayWeatherUpdateDTO updateDayWeatherDTO = new DayWeatherUpdateDTO();
+        updateDayWeatherDTO.setWeatherType(newWeatherType.getName());
+        updateDayWeatherDTO.setTimeOfDay(timeOfDay);
+        updateDayWeatherDTO.setDistricts(gameDTO.getDistricts());
+        return updateDayWeatherDTO;
     }
 
     private int calculateNewEnergyProduction(List<BuildingDTO> districtBuildings, FactorProvider factorProvider) {
