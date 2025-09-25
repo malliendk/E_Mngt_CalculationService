@@ -1,13 +1,12 @@
-package com.dillian.e_mngt_backendforfrontend.services.utils;
+package com.dillian.e_mngt_backendforfrontend.utils;
 
-import com.dillian.e_mngt_backendforfrontend.services.utils.constants.BuildingIds;
+import com.dillian.e_mngt_backendforfrontend.utils.constants.BuildingIds;
 import com.dillian.e_mngt_backendforfrontend.dtos.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.function.BiConsumer;
 import java.util.function.ToDoubleFunction;
 import java.util.function.ToIntFunction;
 
@@ -15,10 +14,9 @@ import java.util.function.ToIntFunction;
 @Slf4j
 public class CalculationHelperService {
 
-    static public double calculateGridLoad(int energyProduction, int energyConsumption, int gridCapacity) {
-        return (double) (energyProduction - energyConsumption) / gridCapacity;
+    static public double calculateGridLoad(int energyProduction, int energyConsumption, int gridCapacity, SupervisorDTO supervisor) {
+        return (double) ((energyProduction - energyConsumption) / gridCapacity) * supervisor.getPerkGridEfficiency();
     }
-
 
     static public int sumPowerPlantProduction(List<BuildingDTO> buildings) {
         int totalPowerPlantProduction = buildings.stream()

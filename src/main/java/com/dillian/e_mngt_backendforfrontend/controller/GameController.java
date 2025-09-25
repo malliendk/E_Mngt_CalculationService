@@ -26,6 +26,7 @@ public class GameController {
 
     @PostMapping()
     public ResponseEntity<InitiateDTO> startGame(@RequestBody InitiateDTO initiateDTO) {
+        log.info("incoming initiateDTO supervisor: " + initiateDTO.getSupervisor());
         gameService.buildGameDTO(initiateDTO);
         schedulerService.startSchedulers();
         return ResponseEntity.ok(initiateDTO);

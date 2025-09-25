@@ -8,7 +8,7 @@ import com.dillian.e_mngt_backendforfrontend.enums.FactorProvider;
 import com.dillian.e_mngt_backendforfrontend.enums.TimeOfDay;
 import com.dillian.e_mngt_backendforfrontend.enums.WeatherType;
 import com.dillian.e_mngt_backendforfrontend.services.BuildingService;
-import com.dillian.e_mngt_backendforfrontend.services.utils.CalculationHelperService;
+import com.dillian.e_mngt_backendforfrontend.utils.CalculationHelperService;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Random;
 
-import static com.dillian.e_mngt_backendforfrontend.services.utils.CalculationHelperService.*;
+import static com.dillian.e_mngt_backendforfrontend.utils.CalculationHelperService.*;
 
 @Service
 @Getter

@@ -1,4 +1,4 @@
-package com.dillian.e_mngt_backendforfrontend.services.utils.constants;
+package com.dillian.e_mngt_backendforfrontend.utils.constants;
 
 public class SchedulerValues {
 

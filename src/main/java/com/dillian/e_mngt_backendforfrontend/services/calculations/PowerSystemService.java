@@ -12,7 +12,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 
-import static com.dillian.e_mngt_backendforfrontend.services.utils.CalculationHelperService.sumBuildingProperty;
+import static com.dillian.e_mngt_backendforfrontend.utils.CalculationHelperService.sumBuildingProperty;
 
 
 @Service

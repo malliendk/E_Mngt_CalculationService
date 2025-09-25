@@ -1,7 +1,7 @@
 package com.dillian.e_mngt_backendforfrontend.services;
 
 import com.dillian.e_mngt_backendforfrontend.services.calculations.DistrictStatsCalculationService;
-import com.dillian.e_mngt_backendforfrontend.services.utils.constants.StartingValues;
+import com.dillian.e_mngt_backendforfrontend.utils.constants.StartingValues;
 import com.dillian.e_mngt_backendforfrontend.dtos.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.dillian.e_mngt_backendforfrontend.services.utils.CalculationHelperService.*;
+import static com.dillian.e_mngt_backendforfrontend.utils.CalculationHelperService.*;
 
 @Service
 @AllArgsConstructor
@@ -17,6 +17,7 @@ import static com.dillian.e_mngt_backendforfrontend.services.utils.CalculationHe
 public class GameDTOBuilderService {
 
     private final BuildingService buildingService;
+    private final SupervisorService supervisorService;
     private final DistrictStatsCalculationService districtStatsCalculationService;
 
     /**
@@ -34,15 +35,15 @@ public class GameDTOBuilderService {
     }
 
     private ExtendedGameDTO calculateStats(InitiateDTO initiateDTO, List<BuildingDTO> fullyProcessedBuildings) {
-        int energyProduction = sumBuildingProperty(BuildingDTO::getEnergyProduction, fullyProcessedBuildings);
-        int energyConsumption = sumBuildingProperty(BuildingDTO::getEnergyConsumption, fullyProcessedBuildings);
-        int gridCapacity = sumBuildingProperty(BuildingDTO::getGridCapacity, fullyProcessedBuildings);
-        String startingTimeOfDay = StartingValues.TIME_OF_DAY_STARTING_VALUE;
-        String startingWeatherType = StartingValues.WEATHER_TYPE_STARTING_VALUE;
-        double gridLoad = calculateGridLoad(energyProduction, energyConsumption, gridCapacity);
+        final int energyProduction = sumBuildingProperty(BuildingDTO::getEnergyProduction, fullyProcessedBuildings);
+        final int energyConsumption = sumBuildingProperty(BuildingDTO::getEnergyConsumption, fullyProcessedBuildings);
+        final int gridCapacity = sumBuildingProperty(BuildingDTO::getGridCapacity, fullyProcessedBuildings);
+        final String startingTimeOfDay = StartingValues.TIME_OF_DAY_STARTING_VALUE;
+        final String startingWeatherType = StartingValues.WEATHER_TYPE_STARTING_VALUE;
+        final double gridLoad = calculateGridLoad(energyProduction, energyConsumption, gridCapacity, initiateDTO.getSupervisor());
         initiateDTO = buildingService.assignTilesToDistricts(initiateDTO, fullyProcessedBuildings);
-        List<District> processedDistricts = districtStatsCalculationService.calculateCumulativeDistrictValues(initiateDTO.getDistricts());
-        return ExtendedGameDTO.builder()
+        final List<District> processedDistricts = districtStatsCalculationService.calculateCumulativeDistrictValues(initiateDTO.getDistricts());
+        ExtendedGameDTO dto = ExtendedGameDTO.builder()
                 .id(initiateDTO.getId())
                 .funds(initiateDTO.getFunds())
                 .popularity(initiateDTO.getPopularity())
@@ -55,13 +56,16 @@ public class GameDTOBuilderService {
                 .solarPanelAmount(sumBuildingProperty(BuildingDTO::getSolarPanelAmount, fullyProcessedBuildings))
                 .solarPanelCapacity(sumBuildingProperty(BuildingDTO::getSolarPanelCapacity, fullyProcessedBuildings))
                 .households(sumBuildingProperty(BuildingDTO::getHouseHolds, fullyProcessedBuildings))
-                .goldIncome(sumBuildingProperty(BuildingDTO::getGoldIncome, fullyProcessedBuildings))
-                .researchIncome(sumBuildingProperty(BuildingDTO::getResearchIncome, fullyProcessedBuildings))
-                .popularityIncome(sumBuildingProperty(BuildingDTO::getPopularityIncome, fullyProcessedBuildings))
+                .goldIncome(supervisorService.processGoldIncome(initiateDTO, fullyProcessedBuildings))
+                .researchIncome(supervisorService.processResearchIncome(initiateDTO, fullyProcessedBuildings))
+                .popularityIncome(supervisorService.processPopularityIncome(initiateDTO, fullyProcessedBuildings))
                 .environmentalScore(sumBuildingProperty(BuildingDTO::getEnvironmentalScore, fullyProcessedBuildings))
                 .timeOfDay(startingTimeOfDay)
                 .weatherType(startingWeatherType)
                 .districts(processedDistricts)
+                .supervisor(initiateDTO.getSupervisor())
                 .build();
+        log.info("retrieved supervisor: " + initiateDTO.getSupervisor());
+        return dto;
     }
 }

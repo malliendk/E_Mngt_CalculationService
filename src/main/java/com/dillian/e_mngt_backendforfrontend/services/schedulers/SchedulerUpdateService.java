@@ -1,7 +1,5 @@
 package com.dillian.e_mngt_backendforfrontend.services.schedulers;
 
-import com.dillian.e_mngt_backendforfrontend.dtos.MinimizedGameDTO;
-import com.dillian.e_mngt_backendforfrontend.services.utils.constants.SchedulerValues;
 import com.dillian.e_mngt_backendforfrontend.dtos.ExtendedGameDTO;
 import com.dillian.e_mngt_backendforfrontend.services.GameService;
 import lombok.extern.slf4j.Slf4j;

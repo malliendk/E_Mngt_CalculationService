@@ -9,7 +9,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class IncomeAddDTO {
 
-    private int newFunds;
-    private int newPopularity;
-    private int newResearch;
+    private double newFunds;
+    private double newPopularity;
+    private double newResearch;
 }

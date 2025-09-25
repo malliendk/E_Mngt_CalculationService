@@ -10,8 +10,20 @@ import lombok.ToString;
 public class SupervisorDTO {
 
     private Long id;
-    private String firstName;
-    private String lastName;
+    private String name;
     private String imageUrl;
     private String biography;
+    private String classType;
+    private String type;
+    private String specialAbility;
+    private int perkGoldIncome;
+    private int perkGoldCost;
+    private int perkPopularityIncome;
+    private int perkPopularityCost;
+    private int perkResearchIncome;
+    private int perkResearchCost;
+    private int perkEnvironmentalIncome;
+    private int perkGridResilience;
+    private int perkGridEfficiency;
+    private int specialPerk;
 }

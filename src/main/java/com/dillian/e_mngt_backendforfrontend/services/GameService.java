@@ -73,7 +73,7 @@ public class GameService {
         this.extendedGameDTO.setDistricts(updatedDistricts);
     }
 
-    private void updateGameDTOByIncome(int newFunds, int newPopularity, int newResearch) {
+    private void updateGameDTOByIncome(double newFunds, double newPopularity, double newResearch) {
         this.extendedGameDTO.setFunds(newFunds);
         this.extendedGameDTO.setPopularity(newPopularity);
         this.extendedGameDTO.setResearch(newResearch);
