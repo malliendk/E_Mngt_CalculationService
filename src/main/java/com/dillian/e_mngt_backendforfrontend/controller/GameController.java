@@ -3,6 +3,7 @@ package com.dillian.e_mngt_backendforfrontend.controller;
 import com.dillian.e_mngt_backendforfrontend.dtos.ExtendedGameDTO;
 import com.dillian.e_mngt_backendforfrontend.dtos.InitiateDTO;
 import com.dillian.e_mngt_backendforfrontend.dtos.MinimizedGameDTO;
+import com.dillian.e_mngt_backendforfrontend.dtos.PopularitySchedulerRequest;
 import com.dillian.e_mngt_backendforfrontend.services.GameService;
 import com.dillian.e_mngt_backendforfrontend.services.schedulers.GameEventService;
 import com.dillian.e_mngt_backendforfrontend.services.schedulers.SchedulerUpdateService;
@@ -30,6 +31,12 @@ public class GameController {
         gameService.buildGameDTO(initiateDTO);
         schedulerService.startSchedulers();
         return ResponseEntity.ok(initiateDTO);
+    }
+
+    @PostMapping("/scheduler/popularity")
+    public ResponseEntity<Void> startPopularityLossScheduler() {
+        schedulerService.startPopularityScheduler();
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("schedulers/shutdown")
@@ -62,7 +69,8 @@ public class GameController {
     public SseEmitter streamdayWeatherUpdates() {
         log.info("SSE endpoint called for day-weather stream");
         return gameEventService.createDayWeatherStream();
-    }}
+    }
+}
 
 
 

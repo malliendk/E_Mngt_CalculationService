@@ -2,6 +2,7 @@ package com.dillian.e_mngt_backendforfrontend.services.schedulers;
 
 import com.dillian.e_mngt_backendforfrontend.dtos.ExtendedGameDTO;
 import com.dillian.e_mngt_backendforfrontend.services.GameService;
+import com.dillian.e_mngt_backendforfrontend.utils.constants.SchedulerValues;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -14,12 +15,13 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class SchedulerUpdateService {
 
-    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(3);
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(4);
     private final GameService gameService;
 
     private ScheduledFuture<?> timeOfDayTask;
     private ScheduledFuture<?> weatherTypeTask;
     private ScheduledFuture<?> incomeTask;
+    private ScheduledFuture<?> popularityLossTask;
 
     public SchedulerUpdateService(final GameService gameService) {
         this.gameService = gameService;
@@ -29,6 +31,10 @@ public class SchedulerUpdateService {
         scheduleTimeOfDayUpdate();
         scheduleWeatherTypeUpdate();
         scheduleIncomeUpdate();
+    }
+
+    public void startPopularityScheduler() {
+        scheduleGoldPopularityIncomeLoss();
     }
 
 
@@ -41,6 +47,9 @@ public class SchedulerUpdateService {
         }
         if (incomeTask != null && !incomeTask.isCancelled()) {
             incomeTask.cancel(true);
+        }
+        if (popularityLossTask != null && !popularityLossTask.isCancelled()) {
+            popularityLossTask.cancel(true);
         }
         log.info("All schedulers have been shut down.");
     }
@@ -71,8 +80,16 @@ public class SchedulerUpdateService {
                     ExtendedGameDTO extendedGameDTO = gameService.getExtendedGameDTO();
                     gameService.addIncome(extendedGameDTO);
                     log.info("Income update completed: {}", extendedGameDTO);
-                }, 30,
-                30,
+                }, SchedulerValues.INCOME_SCHEDULER_INITIAL_DELAY,
+                SchedulerValues.INCOME_UPDATE_SECONDS,
                 TimeUnit.SECONDS);
+    }
+
+    public void scheduleGoldPopularityIncomeLoss() {
+        popularityLossTask = scheduler.scheduleAtFixedRate(() -> {
+            ExtendedGameDTO extendedGameDTO = gameService.getExtendedGameDTO();
+                gameService.subtractPopularityIncome(extendedGameDTO);
+                log.info("Popularity loss update completed: {}", extendedGameDTO);
+        }, 0,30, TimeUnit.SECONDS);
     }
 }

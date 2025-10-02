@@ -17,7 +17,7 @@ public class BuildingDTO {
     private final int price;
     private final String imageUri;
     private final int gridCapacity;
-    private final int houseHolds;
+    private final int housing;
     private int energyProduction;
     private final int energyConsumption;
     private int solarPanelAmount;
@@ -26,4 +26,5 @@ public class BuildingDTO {
     private int goldIncome;
     private int researchIncome;
     private int environmentalScore;
+    private int housingRequirement;
 }

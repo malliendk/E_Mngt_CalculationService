@@ -3,6 +3,7 @@ package com.dillian.e_mngt_backendforfrontend.services;
 import com.dillian.e_mngt_backendforfrontend.GameDTOMapper;
 import com.dillian.e_mngt_backendforfrontend.dtos.*;
 import com.dillian.e_mngt_backendforfrontend.services.calculations.DayWeatherService;
+import com.dillian.e_mngt_backendforfrontend.services.calculations.IncomeLossCalculator;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -17,14 +18,16 @@ public class GameService {
     private final GameDTOBuilderService GameDTOBuilderService;
     private final GameDTOMapper gameDTOMapper;
     private final DayWeatherService dayWeatherService;
+    private final IncomeLossCalculator incomeLossCalculator;;
     private ExtendedGameDTO extendedGameDTO;
     private DayWeatherUpdateDTO dayWeatherUpdateDTO;
     private IncomeAddDTO incomeAddDTO;
 
-    public GameService(final DayWeatherService dayWeatherService, final GameDTOBuilderService GameDTOBuilderService, final GameDTOMapper gameDTOMapper) {
+    public GameService(final DayWeatherService dayWeatherService, final GameDTOBuilderService GameDTOBuilderService, final GameDTOMapper gameDTOMapper, final IncomeLossCalculator incomeLossCalculator) {
         this.dayWeatherService = dayWeatherService;
         this.GameDTOBuilderService = GameDTOBuilderService;
         this.gameDTOMapper = gameDTOMapper;
+        this.incomeLossCalculator = incomeLossCalculator;
     }
 
     public void buildGameDTO(InitiateDTO initiateDTO) {
@@ -65,6 +68,11 @@ public class GameService {
         this.incomeAddDTO = incomeDTO;
         updateGameDTOByIncome(incomeDTO.getNewFunds(), incomeDTO.getNewPopularity(), incomeDTO.getNewResearch());
         log.info("updated gameDTO: {}", extendedGameDTO);
+    }
+
+    public void subtractPopularityIncome(ExtendedGameDTO extendedGameDTO) {
+        this.extendedGameDTO = incomeLossCalculator.calculateLossByDistrictStressLevel(extendedGameDTO);
+        log.info("subtracted gold and popularity income: {} {}", extendedGameDTO.getGoldIncome(), extendedGameDTO.getPopularityIncome());
     }
 
     private void updateGameDTOWithDayWeather(String newTimeOfDay, String newWeatherType, List<District> updatedDistricts) {

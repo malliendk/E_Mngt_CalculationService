@@ -20,6 +20,7 @@ public class District {
     private int environmentalScore;
     private int solarPanelCapacity;
     private int solarPanelAmount;
+    private int housing;
     private List<Tile> tiles;
 
     private int netProduction;
@@ -29,6 +30,8 @@ public class District {
     private double stressLevel;         // Current stress on district grid
     private List<String> connectedLines; // IDs of connected transmission lines
 
+    private double energyDeficit;
+    private double demandCoverage;
     private boolean blackout;            // True if stressLevel > 0.5
     private double monetaryCost;         // Financial impact of stress
     private double popularityImpact;     // Political impact of stress
@@ -36,7 +39,6 @@ public class District {
     private int centralizedEnergyProduction;    // Energy from power plants, etc.
     private int localConsumption;               // Consumption from housing and public buildings
     private int strandedLocalEnergy;            // Local energy that can't enter the grid due to congestion
-
 
     public void setEnergyProduction(int energyProduction) {
         this.energyProduction = energyProduction;

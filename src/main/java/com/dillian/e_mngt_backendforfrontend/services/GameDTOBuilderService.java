@@ -1,6 +1,7 @@
 package com.dillian.e_mngt_backendforfrontend.services;
 
 import com.dillian.e_mngt_backendforfrontend.services.calculations.DistrictStatsCalculationService;
+import com.dillian.e_mngt_backendforfrontend.services.calculations.IncomeLossCalculator;
 import com.dillian.e_mngt_backendforfrontend.utils.constants.StartingValues;
 import com.dillian.e_mngt_backendforfrontend.dtos.*;
 import lombok.AllArgsConstructor;
@@ -19,6 +20,7 @@ public class GameDTOBuilderService {
     private final BuildingService buildingService;
     private final SupervisorService supervisorService;
     private final DistrictStatsCalculationService districtStatsCalculationService;
+    private final IncomeLossCalculator incomeLossCalculator;
 
     /**
      * Builds and returns a GameDTO by processing buildings and accumulating income from solar panels.
@@ -55,10 +57,10 @@ public class GameDTOBuilderService {
                 .gridLoad(gridLoad)
                 .solarPanelAmount(sumBuildingProperty(BuildingDTO::getSolarPanelAmount, fullyProcessedBuildings))
                 .solarPanelCapacity(sumBuildingProperty(BuildingDTO::getSolarPanelCapacity, fullyProcessedBuildings))
-                .households(sumBuildingProperty(BuildingDTO::getHouseHolds, fullyProcessedBuildings))
+                .housing(sumBuildingProperty(BuildingDTO::getHousing, fullyProcessedBuildings))
                 .goldIncome(supervisorService.processGoldIncome(initiateDTO, fullyProcessedBuildings))
-                .researchIncome(supervisorService.processResearchIncome(initiateDTO, fullyProcessedBuildings))
                 .popularityIncome(supervisorService.processPopularityIncome(initiateDTO, fullyProcessedBuildings))
+                .researchIncome(supervisorService.processResearchIncome(initiateDTO, fullyProcessedBuildings))
                 .environmentalScore(sumBuildingProperty(BuildingDTO::getEnvironmentalScore, fullyProcessedBuildings))
                 .timeOfDay(startingTimeOfDay)
                 .weatherType(startingWeatherType)

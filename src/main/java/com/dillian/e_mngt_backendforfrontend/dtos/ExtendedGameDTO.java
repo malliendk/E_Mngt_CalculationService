@@ -22,7 +22,7 @@ public class ExtendedGameDTO {
     private final int gridCapacity;
     private final int solarPanelAmount;
     private final int solarPanelCapacity;
-    private final int households;
+    private final int housing;
     private double goldIncome;
     private double researchIncome;
     private double popularityIncome;
