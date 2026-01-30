@@ -1,4 +1,4 @@
-package com.dillian.e_mngt_backendforfrontend.dtos;
+package com.dillian.e_mngt_backendforfrontend.dtos.inGameObjects;
 
 import lombok.Getter;
 import lombok.Setter;

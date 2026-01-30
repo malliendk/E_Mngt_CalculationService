@@ -1,14 +1,15 @@
 package com.dillian.e_mngt_backendforfrontend.services.calculations;
 
-import com.dillian.e_mngt_backendforfrontend.dtos.BuildingDTO;
+import com.dillian.e_mngt_backendforfrontend.dtos.inGameObjects.BuildingDTO;
 import com.dillian.e_mngt_backendforfrontend.dtos.DayWeatherUpdateDTO;
-import com.dillian.e_mngt_backendforfrontend.dtos.District;
+import com.dillian.e_mngt_backendforfrontend.dtos.inGameObjects.District;
 import com.dillian.e_mngt_backendforfrontend.dtos.ExtendedGameDTO;
 import com.dillian.e_mngt_backendforfrontend.enums.FactorProvider;
 import com.dillian.e_mngt_backendforfrontend.enums.TimeOfDay;
 import com.dillian.e_mngt_backendforfrontend.enums.WeatherType;
 import com.dillian.e_mngt_backendforfrontend.services.BuildingService;
 import com.dillian.e_mngt_backendforfrontend.utils.CalculationHelperService;
+import com.dillian.e_mngt_backendforfrontend.utils.constants.ProdCon;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -16,8 +17,7 @@ import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 import static com.dillian.e_mngt_backendforfrontend.utils.CalculationHelperService.*;
 
@@ -35,12 +35,24 @@ public class DayWeatherService {
     private TimeOfDay newTimeOfDay;
     private int currentIndex = 0;
 
-    public DayWeatherService(final BuildingService buildingService, final DistrictStatsCalculationService districtStatsCalculationService, final CalculationHelperService calculationHelperService) {
+    /**
+     * Constructor for DayWeatherService.
+     *
+     * @param buildingService                Service for building-related operations.
+     * @param districtStatsCalculationService Service for calculating district statistics.
+     * @param calculationHelperService       Utility service for calculations.
+     */
+    public DayWeatherService(final BuildingService buildingService,
+                             final DistrictStatsCalculationService districtStatsCalculationService,
+                             final CalculationHelperService calculationHelperService) {
         this.buildingService = buildingService;
         this.districtStatsCalculationService = districtStatsCalculationService;
         this.calculationHelperService = calculationHelperService;
     }
 
+    /**
+     * Initializes the list of times of day when the application is ready.
+     */
     @EventListener(ApplicationReadyEvent.class)
     private void loadTimesOfDay() {
         this.timesOfDay = List.of(
@@ -50,6 +62,9 @@ public class DayWeatherService {
                 TimeOfDay.NIGHT);
     }
 
+    /**
+     * Initializes the list of weather types when the application starts.
+     */
     @EventListener(ApplicationStartedEvent.class)
     private void loadWeatherTypes() {
         this.weatherTypes = List.of(
@@ -60,60 +75,98 @@ public class DayWeatherService {
     }
 
     /**
-     * Updates the GameDTO's energy production and energy consumption values based on the time of day.
-     * <p>
-     * The update is performed in-place by directly summing the BuildingDTOs' production
-     * and consumption values.
-     * <p>
-     * //     * @param initiateDTO The DTO containing initialization parameters.
+     * Generates a DayWeatherUpdateDTO based on the next time of day and a random weather type.
+     * Also calculates new energy production and consumption for each district.
      *
-     * @param gameDTO The game state to be updated.
-     * @return The updated GameDTO with adjusted energy production and consumption.
+     * @param gameDTO The current game state.
+     * @return A DTO containing updated weather and energy data.
      */
     public DayWeatherUpdateDTO updateDTOByTimeOfDay(ExtendedGameDTO gameDTO) {
         final TimeOfDay timeOfDay = cycleThroughTimesOfDay();
-        final WeatherType randomWeatherType = getRandomWeatherType();
-        for (District district : gameDTO.getDistricts()) {
-            final List<BuildingDTO> districtBuildings = getBuildingsFromTiles(district);
-            int newEnergyProduction = calculateNewEnergyProduction(districtBuildings, timeOfDay);
-            int newEnergyConsumption = calculateNewEnergyConsumption(districtBuildings, timeOfDay);
-            district.setEnergyProduction(newEnergyProduction);
-            district.setEnergyConsumption(newEnergyConsumption);
-        }
+        final WeatherType newWeatherType = getRandomWeatherType();
         districtStatsCalculationService.calculateCumulativeDistrictValues(gameDTO.getDistricts());
-        DayWeatherUpdateDTO updateDayWeatherDTO = new DayWeatherUpdateDTO();
-        updateDayWeatherDTO.setWeatherType(newWeatherType.getName());
-        updateDayWeatherDTO.setTimeOfDay(timeOfDay.getName());
-        updateDayWeatherDTO.setDistricts(gameDTO.getDistricts());
-        return updateDayWeatherDTO;
+        DayWeatherUpdateDTO dto = new DayWeatherUpdateDTO();
+        dto.setTimeOfDay(timeOfDay.getName());
+        dto.setWeatherType(newWeatherType.getName());
+        dto.setNewProductions(calculateNewDistrictProductions(gameDTO.getDistricts(), timeOfDay));
+        dto.setNewConsumptions(calculateNewDistrictConsumptions(gameDTO.getDistricts(), timeOfDay));
+        return dto;
     }
 
     /**
-     * Updates the GameDTO's energy production based on the current weather type.
-     * <p>
-     * The update is performed in-place by summing the BuildingDTOs' production and
-     * consumption values within its stream.
+     * Generates a DayWeatherUpdateDTO based on a random weather type and the current time of day.
+     * Only updates energy production.
      *
-     * @param gameDTO The game state to be updated.
-     * @return The updated GameDTO with adjusted energy production based on weather conditions.
+     * @param gameDTO The current game state.
+     * @return A DTO containing updated weather and production data.
      */
     public DayWeatherUpdateDTO updateDTOByWeatherType(ExtendedGameDTO gameDTO) {
-        WeatherType newWeatherType = getRandomWeatherType();
-        String timeOfDay = gameDTO.getTimeOfDay();
-        for (District district : gameDTO.getDistricts()) {
-            final List<BuildingDTO> districtBuildings = getBuildingsFromTiles(district);
-            int newEnergyProduction = calculateNewEnergyProduction(districtBuildings, newWeatherType);
-            district.setEnergyProduction(newEnergyProduction);
-        }
+        final WeatherType newWeatherType = getRandomWeatherType();
+        final String timeOfDay = gameDTO.getTimeOfDay();
         districtStatsCalculationService.calculateCumulativeDistrictValues(gameDTO.getDistricts());
-
-        DayWeatherUpdateDTO updateDayWeatherDTO = new DayWeatherUpdateDTO();
-        updateDayWeatherDTO.setWeatherType(newWeatherType.getName());
-        updateDayWeatherDTO.setTimeOfDay(timeOfDay);
-        updateDayWeatherDTO.setDistricts(gameDTO.getDistricts());
-        return updateDayWeatherDTO;
+        DayWeatherUpdateDTO dto = new DayWeatherUpdateDTO();
+        dto.setTimeOfDay(timeOfDay);
+        dto.setWeatherType(newWeatherType.getName());
+        dto.setNewProductions(calculateNewDistrictProductions(gameDTO.getDistricts(), newWeatherType));
+        dto.setNewConsumptions(Collections.emptyMap());
+        return dto;
     }
 
+    /**
+     * Sets the production and consumption maps in the DayWeatherUpdateDTO
+     * using the current game state.
+     *
+     * @param dayWeatherDTO The DTO to update.
+     * @param gameDTO       The current game state.
+     * @return The updated DayWeatherUpdateDTO.
+     */
+    public DayWeatherUpdateDTO setProductionAndConsumption(DayWeatherUpdateDTO dayWeatherDTO, ExtendedGameDTO gameDTO) {
+        dayWeatherDTO.setNewProductions(buildingService.createEnergyFlowMap(gameDTO, ProdCon.PRODUCTION));
+        dayWeatherDTO.setNewConsumptions(buildingService.createEnergyFlowMap(gameDTO, ProdCon.CONSUMPTION));
+        return dayWeatherDTO;
+    }
+
+    /**
+     * Calculates new energy production values for each district based on a factor provider.
+     *
+     * @param districts      List of districts to process.
+     * @param factorProvider The factor provider (e.g., time of day or weather).
+     * @return A map of district IDs to new production values.
+     */
+    public Map<Long, Integer> calculateNewDistrictProductions(List<District> districts, FactorProvider factorProvider) {
+        Map<Long, Integer> productionMap = new HashMap<>();
+        for (District district : districts) {
+            List<BuildingDTO> buildings = getBuildingsFromTiles(district);
+            int production = calculateNewEnergyProduction(buildings, factorProvider);
+            productionMap.put(district.getId(), production);
+        }
+        return productionMap;
+    }
+
+    /**
+     * Calculates new energy consumption values for each district based on a factor provider.
+     *
+     * @param districts      List of districts to process.
+     * @param factorProvider The factor provider (e.g., time of day or weather).
+     * @return A map of district IDs to new consumption values.
+     */
+    public Map<Long, Integer> calculateNewDistrictConsumptions(List<District> districts, FactorProvider factorProvider) {
+        Map<Long, Integer> consumptionMap = new HashMap<>();
+        for (District district : districts) {
+            List<BuildingDTO> buildings = getBuildingsFromTiles(district);
+            int consumption = calculateNewEnergyConsumption(buildings, factorProvider);
+            consumptionMap.put(district.getId(), consumption);
+        }
+        return consumptionMap;
+    }
+
+    /**
+     * Calculates new energy production for a list of buildings using a factor provider.
+     *
+     * @param districtBuildings List of buildings in a district.
+     * @param factorProvider    The factor provider (e.g., time of day or weather).
+     * @return The calculated energy production value.
+     */
     private int calculateNewEnergyProduction(List<BuildingDTO> districtBuildings, FactorProvider factorProvider) {
         int totalEnergyProduction = sumBuildingProperty(BuildingDTO::getEnergyProduction, districtBuildings);
         int powerPlantProduction = sumPowerPlantProduction(districtBuildings);
@@ -121,14 +174,25 @@ public class DayWeatherService {
         return (int) (variableProduction * factorProvider.getGenerationFactor() + powerPlantProduction);
     }
 
+    /**
+     * Calculates new energy consumption for a list of buildings using a factor provider.
+     *
+     * @param districtBuildings List of buildings in a district.
+     * @param factorProvider    The factor provider (e.g., time of day or weather).
+     * @return The calculated energy consumption value.
+     */
     private int calculateNewEnergyConsumption(List<BuildingDTO> districtBuildings, FactorProvider factorProvider) {
-        int totalEnergyConsumption = sumBuildingProperty(
-                BuildingDTO::getEnergyConsumption, districtBuildings);
+        int totalEnergyConsumption = sumBuildingProperty(BuildingDTO::getEnergyConsumption, districtBuildings);
         int newHousingConsumption = (int) (totalEnergyConsumption * factorProvider.getHousingConsumptionFactor());
         int newIndustrialConsumption = (int) (totalEnergyConsumption * factorProvider.getIndustrialConsumptionFactor());
         return newHousingConsumption + newIndustrialConsumption;
     }
 
+    /**
+     * Cycles through the list of times of day and returns the next one.
+     *
+     * @return The next TimeOfDay value.
+     */
     private TimeOfDay cycleThroughTimesOfDay() {
         this.newTimeOfDay = this.timesOfDay.get(currentIndex);
         this.currentIndex++;
@@ -139,7 +203,11 @@ public class DayWeatherService {
         return this.newTimeOfDay;
     }
 
-
+    /**
+     * Selects a random weather type from the available list.
+     *
+     * @return A randomly selected WeatherType.
+     */
     private WeatherType getRandomWeatherType() {
         int randomIndex = new Random().nextInt(0, 4);
         this.newWeatherType = this.weatherTypes.get(randomIndex);

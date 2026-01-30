@@ -1,5 +1,8 @@
 package com.dillian.e_mngt_backendforfrontend.dtos;
 
+import com.dillian.e_mngt_backendforfrontend.dtos.inGameObjects.BuildingDTO;
+import com.dillian.e_mngt_backendforfrontend.dtos.inGameObjects.District;
+import com.dillian.e_mngt_backendforfrontend.dtos.inGameObjects.SupervisorDTO;
 import lombok.*;
 
 import java.util.List;

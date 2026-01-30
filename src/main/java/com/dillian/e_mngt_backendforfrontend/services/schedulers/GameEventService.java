@@ -1,46 +1,53 @@
 package com.dillian.e_mngt_backendforfrontend.services.schedulers;
+
 import com.dillian.e_mngt_backendforfrontend.dtos.DayWeatherUpdateDTO;
-import com.dillian.e_mngt_backendforfrontend.dtos.IncomeAddDTO;
+import com.dillian.e_mngt_backendforfrontend.dtos.IncomeDTO;
 import com.dillian.e_mngt_backendforfrontend.services.GameService;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-
 import java.io.IOException;
-import java.util.concurrent.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
-
-// SSE Service
 @Service
 @Slf4j
 public class GameEventService {
 
-
     private final GameService gameService;
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(10);
 
-
+    /**
+     * Constructor for GameEventService.
+     *
+     * @param gameService The service providing game-related data.
+     */
     public GameEventService(GameService gameService) {
         this.gameService = gameService;
     }
 
+    /**
+     * Creates a Server-Sent Events (SSE) stream for sending periodic income updates to the client.
+     *
+     * @return An SseEmitter configured to stream income updates.
+     */
     public SseEmitter createIncomeStream() {
         SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
 
         log.info("Creating new SSE income stream");
 
-        emitter.onCompletion(() -> {
-            log.info("SSE income connection completed");
-        });
+        emitter.onCompletion(() -> log.info("SSE income connection completed"));
 
         emitter.onTimeout(() -> {
             log.warn("SSE income connection timed out");
             emitter.complete();
         });
 
-        emitter.onError((ex) -> {
+        emitter.onError(ex -> {
             log.error("SSE income connection error: {}", ex.getMessage());
             emitter.completeWithError(ex);
         });
@@ -83,23 +90,24 @@ public class GameEventService {
         return emitter;
     }
 
+    /**
+     * Creates a Server-Sent Events (SSE) stream for sending periodic weather updates to the client.
+     *
+     * @return An SseEmitter configured to stream weather updates.
+     */
     public SseEmitter createDayWeatherStream() {
         SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
 
         log.info("Creating new SSE weather stream");
 
-        emitter.onCompletion(() -> {
-            log.info("SSE weather connection completed");
-        });
-
+        emitter.onCompletion(() -> log.info("SSE weather connection completed"));
 
         emitter.onTimeout(() -> {
             log.warn("SSE weather connection timed out");
             emitter.complete();
         });
 
-
-        emitter.onError((ex) -> {
+        emitter.onError(ex -> {
             log.error("SSE weather connection error: {}", ex.getMessage());
             emitter.completeWithError(ex);
         });
@@ -110,7 +118,6 @@ public class GameEventService {
                         .name("connection")
                         .data("Connected to weather stream")
                         .id("connection-" + System.currentTimeMillis()));
-
 
                 log.debug("Weather connection confirmation sent to client");
             } catch (IOException e) {
@@ -143,8 +150,14 @@ public class GameEventService {
         return emitter;
     }
 
+    /**
+     * Sends the latest income update to the client via SSE.
+     *
+     * @param emitter The SseEmitter used to send the event.
+     * @throws IOException If sending the event fails.
+     */
     private void sendIncomeUpdate(SseEmitter emitter) throws IOException {
-        IncomeAddDTO incomeDTO = gameService.getIncomeAddDTO();
+        IncomeDTO incomeDTO = gameService.getIncomeDTO();
         if (incomeDTO != null) {
             emitter.send(SseEmitter.event()
                     .name("income-update")
@@ -156,6 +169,12 @@ public class GameEventService {
         }
     }
 
+    /**
+     * Sends the latest weather update to the client via SSE.
+     *
+     * @param emitter The SseEmitter used to send the event.
+     * @throws IOException If sending the event fails.
+     */
     private void sendWeatherUpdate(SseEmitter emitter) throws IOException {
         DayWeatherUpdateDTO weatherDTO = gameService.getDayWeatherUpdateDTO();
         if (weatherDTO != null) {
@@ -169,6 +188,9 @@ public class GameEventService {
         }
     }
 
+    /**
+     * Gracefully shuts down the scheduler when the service is destroyed.
+     */
     @PreDestroy
     public void shutdown() {
         scheduler.shutdown();
@@ -182,4 +204,3 @@ public class GameEventService {
         }
     }
 }
-

@@ -1,6 +1,6 @@
 package com.dillian.e_mngt_backendforfrontend.services.calculations;
 
-import com.dillian.e_mngt_backendforfrontend.dtos.District;
+import com.dillian.e_mngt_backendforfrontend.dtos.inGameObjects.District;
 import com.dillian.e_mngt_backendforfrontend.dtos.ExtendedGameDTO;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,7 +14,6 @@ public class IncomeLossCalculator {
     static double lossFactor = 0.1;
 
     public ExtendedGameDTO calculateLossByDistrictStressLevel(ExtendedGameDTO gameDTO) {
-        //returns the total loss, which will be deducted from the existing popularityIncome
         double totalGoldLoss = gameDTO.getDistricts().stream()
                 .mapToDouble(District::getMonetaryCost)
                 .sum();

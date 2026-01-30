@@ -1,20 +1,16 @@
 package com.dillian.e_mngt_backendforfrontend.services.calculations;
 
-import com.dillian.e_mngt_backendforfrontend.dtos.BuildingDTO;
-import com.dillian.e_mngt_backendforfrontend.dtos.District;
-import com.dillian.e_mngt_backendforfrontend.dtos.TransmissionLine;
+import com.dillian.e_mngt_backendforfrontend.dtos.inGameObjects.BuildingDTO;
+import com.dillian.e_mngt_backendforfrontend.dtos.inGameObjects.District;
+import com.dillian.e_mngt_backendforfrontend.dtos.inGameObjects.TransmissionLine;
 import org.springframework.stereotype.Service;
 
-import java.awt.Point;
+import java.awt.*;
+import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.dillian.e_mngt_backendforfrontend.utils.CalculationHelperService.sumBuildingProperty;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 @Service
 public class PowerSystemService {

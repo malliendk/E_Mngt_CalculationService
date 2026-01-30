@@ -1,8 +1,11 @@
 package com.dillian.e_mngt_backendforfrontend.dtos;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import java.util.List;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -12,5 +15,6 @@ public class DayWeatherUpdateDTO {
 
     private String timeOfDay;
     private String weatherType;
-    private List<District> districts;
+    private Map<Long, Integer> newProductions;
+    private Map<Long, Integer> newConsumptions;
 }

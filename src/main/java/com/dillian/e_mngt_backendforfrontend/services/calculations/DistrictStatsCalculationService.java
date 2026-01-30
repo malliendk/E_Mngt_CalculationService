@@ -1,6 +1,8 @@
 package com.dillian.e_mngt_backendforfrontend.services.calculations;
 
-import com.dillian.e_mngt_backendforfrontend.dtos.*;
+import com.dillian.e_mngt_backendforfrontend.dtos.inGameObjects.BuildingDTO;
+import com.dillian.e_mngt_backendforfrontend.dtos.inGameObjects.District;
+import com.dillian.e_mngt_backendforfrontend.dtos.inGameObjects.Tile;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

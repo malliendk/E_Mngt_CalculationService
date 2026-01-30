@@ -3,7 +3,6 @@ package com.dillian.e_mngt_backendforfrontend.controller;
 import com.dillian.e_mngt_backendforfrontend.dtos.ExtendedGameDTO;
 import com.dillian.e_mngt_backendforfrontend.dtos.InitiateDTO;
 import com.dillian.e_mngt_backendforfrontend.dtos.MinimizedGameDTO;
-import com.dillian.e_mngt_backendforfrontend.dtos.PopularitySchedulerRequest;
 import com.dillian.e_mngt_backendforfrontend.services.GameService;
 import com.dillian.e_mngt_backendforfrontend.services.schedulers.GameEventService;
 import com.dillian.e_mngt_backendforfrontend.services.schedulers.SchedulerUpdateService;
@@ -66,7 +65,7 @@ public class GameController {
     }
 
     @GetMapping(value = "/day-weather-stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public SseEmitter streamdayWeatherUpdates() {
+    public SseEmitter streamDayWeatherUpdates() {
         log.info("SSE endpoint called for day-weather stream");
         return gameEventService.createDayWeatherStream();
     }

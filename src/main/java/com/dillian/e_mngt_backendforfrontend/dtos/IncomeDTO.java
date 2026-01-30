@@ -7,9 +7,9 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class IncomeAddDTO {
+public class IncomeDTO {
 
-    private double newFunds;
-    private double newPopularity;
-    private double newResearch;
+    private double goldIncome;
+    private double popularityIncome;
+    private double researchIncome;
 }

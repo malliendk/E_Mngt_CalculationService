@@ -1,15 +1,12 @@
 package com.dillian.e_mngt_backendforfrontend.services;
 
-import com.dillian.e_mngt_backendforfrontend.dtos.BuildingDTO;
+import com.dillian.e_mngt_backendforfrontend.dtos.inGameObjects.BuildingDTO;
 import com.dillian.e_mngt_backendforfrontend.dtos.InitiateDTO;
-import com.dillian.e_mngt_backendforfrontend.utils.constants.ServerURLs;
-import com.dillian.e_mngt_backendforfrontend.dtos.SupervisorDTO;
+import com.dillian.e_mngt_backendforfrontend.dtos.inGameObjects.SupervisorDTO;
 import com.dillian.e_mngt_backendforfrontend.utils.constants.Supervisor;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClient;
 
 import java.util.List;
 

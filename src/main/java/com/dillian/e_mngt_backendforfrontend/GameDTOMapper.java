@@ -1,14 +1,11 @@
 package com.dillian.e_mngt_backendforfrontend;
 
-import com.dillian.e_mngt_backendforfrontend.dtos.BuildingDTO;
+import com.dillian.e_mngt_backendforfrontend.dtos.inGameObjects.BuildingDTO;
 import com.dillian.e_mngt_backendforfrontend.dtos.BuildingRequestDTO;
 import com.dillian.e_mngt_backendforfrontend.dtos.ExtendedGameDTO;
 import com.dillian.e_mngt_backendforfrontend.dtos.MinimizedGameDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Mapper(componentModel = "spring")
 public interface GameDTOMapper {

@@ -1,9 +1,9 @@
 //package com.dillian.e_mngt_backendforfrontend.services;
 //
-//import com.dillian.e_mngt_backendforfrontend.dtos.BuildingDTO;
+//import com.dillian.e_mngt_backendforfrontend.dtos.inGameObjects.BuildingDTO;
 //import com.dillian.e_mngt_backendforfrontend.dtos.ExtendedGameDTO;
-//import com.dillian.e_mngt_backendforfrontend.dtos.SolarPanelSetDTO;
-//import com.dillian.e_mngt_backendforfrontend.dtos.SupervisorDTO;
+//import com.dillian.e_mngt_backendforfrontend.dtos.inGameObjects.SolarPanelSetDTO;
+//import com.dillian.e_mngt_backendforfrontend.dtos.inGameObjects.SupervisorDTO;
 //import com.dillian.e_mngt_backendforfrontend.enums.WeatherType;
 //import com.dillian.e_mngt_backendforfrontend.services.calculations.DayWeatherService;
 //import org.junit.jupiter.api.BeforeEach;

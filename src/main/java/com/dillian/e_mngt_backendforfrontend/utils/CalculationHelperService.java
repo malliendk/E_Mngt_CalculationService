@@ -1,13 +1,15 @@
 package com.dillian.e_mngt_backendforfrontend.utils;
 
+import com.dillian.e_mngt_backendforfrontend.dtos.inGameObjects.BuildingDTO;
+import com.dillian.e_mngt_backendforfrontend.dtos.inGameObjects.District;
+import com.dillian.e_mngt_backendforfrontend.dtos.inGameObjects.SupervisorDTO;
+import com.dillian.e_mngt_backendforfrontend.dtos.inGameObjects.Tile;
 import com.dillian.e_mngt_backendforfrontend.utils.constants.BuildingIds;
-import com.dillian.e_mngt_backendforfrontend.dtos.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.function.ToDoubleFunction;
 import java.util.function.ToIntFunction;
 
 @Service
@@ -19,7 +21,7 @@ public class CalculationHelperService {
     }
 
     static public int sumPowerPlantProduction(List<BuildingDTO> buildings) {
-        int totalPowerPlantProduction = buildings.stream()
+        return buildings.stream()
                 .filter(Objects::nonNull)
                 .filter(buildingDTO -> buildingDTO.getId().equals(BuildingIds.COAL_PLANT) ||
                         buildingDTO.getId().equals(BuildingIds.GAS_PLANT) ||
@@ -27,7 +29,6 @@ public class CalculationHelperService {
                         buildingDTO.getId().equals(BuildingIds.NUCLEAR_PLANT))
                 .mapToInt(BuildingDTO::getEnergyProduction)
                 .sum();
-        return totalPowerPlantProduction;
     }
 
     public static int sumBuildingProperty(ToIntFunction<BuildingDTO> getter, List<BuildingDTO> DTOBuildings) {
@@ -37,12 +38,6 @@ public class CalculationHelperService {
                 .sum();
     }
 
-    public static double updateByDayOrWeather(List<BuildingDTO> buildings, ToDoubleFunction<BuildingDTO> getter, double dayOrWeatherFactor) {
-        return buildings.stream()
-                .filter(Objects::nonNull)
-                .mapToDouble(building -> getter.applyAsDouble(building) * dayOrWeatherFactor)
-                .sum();
-    }
 
     public static List<BuildingDTO> getBuildingsFromTiles(District district) {
         return district.getTiles().stream()

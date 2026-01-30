@@ -1,7 +1,7 @@
 //package com.dillian.e_mngt_backendforfrontend.services;
 //
-//import com.dillian.e_mngt_backendforfrontend.dtos.BuildingDTO;
-//import com.dillian.e_mngt_backendforfrontend.dtos.SolarPanelSetDTO;
+//import com.dillian.e_mngt_backendforfrontend.dtos.inGameObjects.BuildingDTO;
+//import com.dillian.e_mngt_backendforfrontend.dtos.inGameObjects.SolarPanelSetDTO;
 //import com.dillian.e_mngt_backendforfrontend.enums.TimeOfDay;
 //import com.dillian.e_mngt_backendforfrontend.services.utils.CalculationHelperService;
 //import org.junit.jupiter.api.Test;
